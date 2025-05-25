@@ -1,0 +1,196 @@
+=== Processing file: copy21.f ===
+Date and time: 2025-05-25 22:52:07
+Dimension: 2d
+==================================================
+
+Copied ..\graduation_data_experiment\sources\2d\copy21.f to ./data/raw\2d\copy21\copy21.f
+Command: gfortran -O3 -g -fprofile-arcs -ftest-coverage "./data/raw\2d\copy21\copy21.f" -o "./data/raw\2d\copy21\copy21"
+Return code: 0
+--------------------------------------------------
+Command: "./data/raw\2d\copy21\copy21"
+Return code: 0
+Output:
+ ========  START OF copy21  ==================
+ copy21  -  complete
+ ======== END OF copy21 ======================
+
+--------------------------------------------------
+Command: gcov -b "./data/raw\2d\copy21\copy21.f"
+Return code: 0
+Output:
+File 'data/raw/2d/copy21/copy21.f'
+Lines executed:76.92% of 26
+Branches executed:100.00% of 20
+Taken at least once:85.00% of 20
+Calls executed:73.68% of 19
+Creating 'copy21.f.gcov'
+
+Lines executed:76.92% of 26
+
+--------------------------------------------------
+Copied and removed ./copy21.f.gcov to ./data/raw\2d\copy21\copy21.f.gcov
+Command: "../SAPFOR/_bin/Release/Sapfor_F.exe" -parse -spf "./data/raw\2d\copy21\copy21.f"
+Return code: 0
+Output:
+SAPFOR version is 2410, build date: Apr 23 2025 11:52:44, c++ version 201703
+  parse file './data/raw\2d\copy21\copy21.f'
+  options: -spf 
+files compilation order:
+  ./data/raw\2d\copy21\copy21.f
+Parsing was completed successfully
+
+--------------------------------------------------
+Command: "../SAPFOR/_bin/Release/Sapfor_F.exe" -passN GET_STATS_FOR_PREDICTOR -keepDVM
+Return code: 0
+Output:
+SAPFOR version is 2410, build date: Apr 23 2025 11:52:44, c++ version 201703
+code for pass GET_STATS_FOR_PREDICTOR is 79
+RUN PASS with name VERIFY_FUNC_DECL
+  Analyzing: data/raw\2d\copy21\copy21.f
+PROFILE: time for this pass = 0.000000 sec (total 0.001000 sec)
+RUN PASS with name FILE_LINE_INFO
+  Analyzing: data/raw\2d\copy21\copy21.f
+  All lines in project 49
+PROFILE: time for this pass = 0.000000 sec (total 0.001000 sec)
+RUN PASS with name BUILD_INCLUDE_DEPENDENCIES
+  Analyzing: data/raw\2d\copy21\copy21.f
+PROFILE: time for this pass = 0.000000 sec (total 0.001000 sec)
+RUN PASS with name CORRECT_VAR_DECL
+  Analyzing: data/raw\2d\copy21\copy21.f
+PROFILE: time for this pass = 0.000000 sec (total 0.001000 sec)
+RUN PASS with name VERIFY_OPERATORS
+  Analyzing: data/raw\2d\copy21\copy21.f
+PROFILE: time for this pass = 0.000000 sec (total 0.001000 sec)
+RUN PASS with name VERIFY_ENDDO
+  Analyzing: data/raw\2d\copy21\copy21.f
+PROFILE: time for this pass = 0.000000 sec (total 0.001000 sec)
+RUN PASS with name VERIFY_INCLUDES
+  Analyzing: data/raw\2d\copy21\copy21.f
+PROFILE: time for this pass = 0.000000 sec (total 0.001000 sec)
+RUN PASS with name PREPROC_ALLOCATES
+  Analyzing: data/raw\2d\copy21\copy21.f
+PROFILE: time for this pass = 0.000000 sec (total 0.001000 sec)
+RUN PASS with name CHECK_PAR_REG_DIR
+  Analyzing: data/raw\2d\copy21\copy21.f
+PROFILE: time for this pass = 0.000000 sec (total 0.001000 sec)
+RUN PASS with name FILL_PARALLEL_REG_IR
+  Analyzing: data/raw\2d\copy21\copy21.f
+PROFILE: time for this pass = 0.000000 sec (total 0.002000 sec)
+RUN PASS with name GET_ALL_ARRAY_DECL
+  Analyzing: data/raw\2d\copy21\copy21.f
+PROFILE: time for this pass = 0.000000 sec (total 0.002000 sec)
+RUN PASS with name FILL_COMMON_BLOCKS
+  Analyzing: data/raw\2d\copy21\copy21.f
+PROFILE: time for this pass = 0.000000 sec (total 0.002000 sec)
+RUN PASS with name PARSE_OMP_DIRS
+  Analyzing: data/raw\2d\copy21\copy21.f
+PROFILE: time for this pass = 0.000000 sec (total 0.002000 sec)
+RUN PASS with name PREPROC_SPF
+  Analyzing: data/raw\2d\copy21\copy21.f
+PROFILE: time for this pass = 0.000000 sec (total 0.002000 sec)
+RUN PASS with name CREATE_INTER_TREE
+  Analyzing: data/raw\2d\copy21\copy21.f
+PROFILE: time for this pass = 0.000000 sec (total 0.002000 sec)
+RUN PASS with name GCOV_PARSER
+  Analyzing: data/raw\2d\copy21\copy21.f
+   Error: unable to open file statistic.txt
+PROFILE: time for this pass = 0.000000 sec (total 0.003000 sec)
+RUN PASS with name VERIFY_FORMAT
+  Analyzing: data/raw\2d\copy21\copy21.f
+PROFILE: time for this pass = 0.000000 sec (total 0.003000 sec)
+RUN PASS with name VERIFY_DVM_DIRS
+  Analyzing: data/raw\2d\copy21\copy21.f
+PROFILE: time for this pass = 0.000000 sec (total 0.003000 sec)
+RUN PASS with name PRIVATE_CALL_GRAPH_STAGE1
+  Analyzing: data/raw\2d\copy21\copy21.f
+PROFILE: time for this pass = 0.000000 sec (total 0.003000 sec)
+RUN PASS with name PRIVATE_CALL_GRAPH_STAGE2
+  Analyzing: data/raw\2d\copy21\copy21.f
+PROFILE: time for this pass = 0.000000 sec (total 0.003000 sec)
+RUN PASS with name MACRO_EXPANSION
+  Analyzing: data/raw\2d\copy21\copy21.f
+PROFILE: time for this pass = 0.000000 sec (total 0.003000 sec)
+RUN PASS with name CONVERT_ASSIGN_TO_LOOP
+  Analyzing: data/raw\2d\copy21\copy21.f
+was on line 18 file data/raw\2d\copy21\copy21.f
+      b = 0
+      do  i_1 = 0,9
+         do  i_0 = 0,9
+            b(i_0 + 1,i_1 + 1) = 0
+         enddo  
+      enddo  
+was on line 19 file data/raw\2d\copy21\copy21.f
+      c(:,:) = b(:,:)
+      do  i_1 = 0,9
+         do  i_0 = 0,9
+            c(i_0 + 1,i_1 + 1) = b(i_0 + 1,i_1 + 1)
+         enddo  
+      enddo  
+was on line 20 file data/raw\2d\copy21\copy21.f
+      d(1:l,1) = x(1:l,1)
+      do  i_0 = 0,9
+         d(i_0 + 1,1) = x(i_0 + 1,1)
+      enddo  
+was on line 21 file data/raw\2d\copy21\copy21.f
+      c(1:l,1) = d(1:l,1)
+      do  i_0 = 0,9
+         c(i_0 + 1,1) = d(i_0 + 1,1)
+      enddo  
+PROFILE: time for this pass = 0.002000 sec (total 0.005000 sec)
+RUN PASS with name DEF_USE_STAGE1
+  Analyzing: data/raw\2d\copy21\copy21.f
+PROFILE: time for this pass = 0.000000 sec (total 0.005000 sec)
+RUN PASS with name DEF_USE_STAGE2
+  Analyzing: data/raw\2d\copy21\copy21.f
+PROFILE: time for this pass = 0.000000 sec (total 0.005000 sec)
+RUN PASS with name VERIFY_COMMON
+  Analyzing: data/raw\2d\copy21\copy21.f
+PROFILE: time for this pass = 0.000000 sec (total 0.006000 sec)
+RUN PASS with name CALL_GRAPH_IR
+  Analyzing: data/raw\2d\copy21\copy21.f
+PROFILE: time for this pass = 0.000000 sec (total 0.006000 sec)
+RUN PASS with name BUILD_IR
+  Analyzing: data/raw\2d\copy21\copy21.f
+  count of functions 3, count of lvls 2
+     RD time for 'ansyes' function is 0.000 sec, iters 1
+     RD time for 'ansno' function is 0.000 sec, iters 1
+
+     RD time for 'copy21' function is 0.000 sec, iters 4
+
+PROFILE: time for this pass = 0.000000 sec (total 0.007000 sec)
+RUN PASS with name SUBST_EXPR_RD
+  Analyzing: data/raw\2d\copy21\copy21.f
+PROFILE: time for this pass = 0.000000 sec (total 0.007000 sec)
+RUN PASS with name LOOP_GRAPH
+  Analyzing: data/raw\2d\copy21\copy21.f
+PROFILE: time for this pass = 0.000000 sec (total 0.007000 sec)
+RUN PASS with name CALL_GRAPH
+  Analyzing: data/raw\2d\copy21\copy21.f
+PROFILE: time for this pass = 0.000000 sec (total 0.008000 sec)
+RUN PASS with name CALL_GRAPH2
+  Analyzing: data/raw\2d\copy21\copy21.f
+  run for func copy21
+  run for func ansyes
+  run for func ansno
+PROFILE: time for this pass = 0.000000 sec (total 0.008000 sec)
+RUN PASS with name GET_STATS_FOR_PREDICTOR
+  Analyzing: data/raw\2d\copy21\copy21.f
+    PAR LOOP [25 data/raw\2d\copy21\copy21.f] total exec 523, total exec lines 8, avg 6.5375000000000000e+01
+    average_parallel_exec 6.5375000000000000e+01
+    parallel_rate 5.8305462653288742e-01
+bad gcov info
+Internal error at line 280 and file PredictScheme.cpp
+exception occurred
+WARR - [#1049: data/raw\2d\copy21\copy21.f: line 44]: Function is impure due to this operator usage
+WARR - [#1049: data/raw\2d\copy21\copy21.f: line 48]: Function is impure due to this operator usage
+WARR - [#1049: data/raw\2d\copy21\copy21.f: line 44]: Function is impure due to this operator usage
+WARR - [#1049: data/raw\2d\copy21\copy21.f: line 48]: Function is impure due to this operator usage
+WARR - [#1049: data/raw\2d\copy21\copy21.f: line 44]: Function is impure due to this operator usage
+WARR - [#1049: data/raw\2d\copy21\copy21.f: line 48]: Function is impure due to this operator usage
+WARR - [#1015: data/raw\2d\copy21\copy21.f: line 46]: This function is not called in current project
+
+--------------------------------------------------
+Исходный файл ./info.json не существует, копирование невозможно
+
+==================================================
+Processing of copy21.f completed successfully at 2025-05-25 22:52:07

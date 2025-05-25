@@ -5,7 +5,7 @@ import datetime
 import glob
 import yaml
 from typing import List, Dict, Optional
-from utils import run_command
+from .utils import run_command
 
 logger = logging.getLogger(__name__)
 

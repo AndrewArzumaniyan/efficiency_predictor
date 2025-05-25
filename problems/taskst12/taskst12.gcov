@@ -1,0 +1,343 @@
+        -:    0:Source:data/raw/1d/taskst12/taskst12.f
+        -:    0:Graph:./data/raw\1d\taskst12\taskst12.gcno
+        -:    0:Data:./data/raw\1d\taskst12\taskst12.gcda
+        -:    0:Runs:1
+function MAIN__ called 1 returned 100% blocks executed 91%
+        1:    1:	PROGRAM    taskst12
+        -:    2:!	rectangular grid is distributed on two blocks
+        -:    3:!
+        -:    4:!	
+        -:    5:	INTEGER,PARAMETER :: K=8, N1=4, ITMAX=20, N2=K-N1, ER=10000
+        1:    6:	REAL,ALLOCATABLE :: A(:,:),A1(:,:),A2(:,:)
+        1:    7:        REAL,ALLOCATABLE :: B(:,:),B1(:,:),B2(:,:) 
+        -:    8:        INTEGER,DIMENSION(2) :: LP,HP
+        -:    9:        INTEGER :: ERRT
+        -:   10:        CHARACTER*8:: TNAME='taskst12'
+        -:   11:CDVM$	PROCESSORS    P(NUMBER_OF_PROCESSORS( ))
+        -:   12:CDVM$	TASK  MB( 2 )
+        -:   13:CDVM$	DISTRIBUTE   A(*,BLOCK)
+        -:   14:CDVM$	ALIGN   B( I, J )  WITH  A( I, J )
+        -:   15:CDVM$	DISTRIBUTE  ::  A1, A2
+        -:   16:CDVM$	ALIGN ::  B1,B2
+        -:   17:   
+        1:   18:        PRINT *,  '===START OF taskst12 ====================='
+call    0 returned 100%
+call    1 returned 100%
+call    2 returned 100%
+        1:   19:        CALL DPT(LP,HP,2)
+        -:   20:CDVM$	MAP  MB( 1 )  ONTO  P( LP(1) : HP(1) )
+    #####:   21:        ALLOCATE(A1(N1+1,K))
+call    0 never executed
+        -:   22:CDVM$	REDISTRIBUTE  A1( *, BLOCK )  ONTO  MB( 1 )
+       1*:   23:        ALLOCATE(B1(N1+1,K))
+branch  0 taken 0% (fallthrough)
+branch  1 taken 100%
+call    2 never executed
+        -:   24:CDVM$	REALIGN   B1( I, J )  WITH  A1( I, J ) 
+        -:   25:
+        -:   26:CDVM$	MAP  MB( 2 )   ONTO  P( LP(2) : HP(2) )
+       1*:   27:        ALLOCATE(A2(N2+1,K))
+branch  0 taken 0% (fallthrough)
+branch  1 taken 100%
+call    2 never executed
+        -:   28:CDVM$	REDISTRIBUTE  A2( *, BLOCK )  ONTO  MB( 2 )
+       1*:   29:        ALLOCATE(B2(N2+1,K))
+branch  0 taken 0% (fallthrough)
+branch  1 taken 100%
+call    2 never executed
+        -:   30:CDVM$	REALIGN   B2( I, J )  WITH  A2( I, J )
+        -:   31:
+       1*:   32:        ALLOCATE(A(K,K),B(K,K))
+branch  0 taken 0% (fallthrough)
+branch  1 taken 100%
+call    2 never executed
+branch  3 taken 100% (fallthrough)
+branch  4 taken 0%
+call    5 never executed
+        -:   33:
+        -:   34:!		Initialization
+        -:   35:!DVM$   TASK_REGION MB
+        -:   36:!DVM$   ON MB(1)
+        -:   37:!DVM$   REGION
+        -:   38:!DVM$	PARALLEL    ( J, I )   ON   A1(I, J)
+        9:   39:	DO  J  =  1, K
+branch  0 taken 89% (fallthrough)
+branch  1 taken 11%
+       41:   40:	   DO I  =  1, N1
+branch  0 taken 80% (fallthrough)
+branch  1 taken 20%
+       40:   41:		IF(I.EQ.1 .OR. J.EQ.1 .OR. J.EQ.K) THEN
+branch  0 taken 66% (fallthrough)
+branch  1 taken 34%
+branch  2 taken 14% (fallthrough)
+branch  3 taken 86%
+       14:   42:			A1(I, J) = 0.
+       14:   43:			B1(I, J) = 0.
+        -:   44:		ELSE
+       18:   45:			B1(I, J)  = 1. + I + J 
+       18:   46:			A1(I, J) = B1(I, J)
+        -:   47:		ENDIF
+        -:   48:           ENDDO
+        -:   49:        ENDDO
+        -:   50:!DVM$   END REGION
+        -:   51:!DVM$   END ON
+        -:   52:!DVM$   ON MB(2)
+        -:   53:!DVM$   REGION
+        -:   54:!DVM$	PARALLEL    ( J, I )   ON   A2(I, J)
+        9:   55:	DO  J  =  1, K
+branch  0 taken 89% (fallthrough)
+branch  1 taken 11%
+       41:   56:           DO  I  =  2, N2+1
+branch  0 taken 80% (fallthrough)
+branch  1 taken 20%
+       40:   57:		IF(I.EQ.N2+1 .OR. J.EQ.1 .OR. J.EQ.K) THEN
+branch  0 taken 66% (fallthrough)
+branch  1 taken 34%
+branch  2 taken 14% (fallthrough)
+branch  3 taken 86%
+       14:   58:			A2(I, J) = 0.
+       14:   59:			B2(I, J) = 0.
+        -:   60:		ELSE
+       18:   61:			B2(I, J)  = 1. + (I+N1-1) + J 
+       18:   62:			A2(I, J) = B2(I, J)
+        -:   63:		ENDIF
+        -:   64:           ENDDO
+        -:   65:        ENDDO
+        -:   66:!DVM$   END REGION
+        -:   67:!DVM$   END ON
+        -:   68:!DVM$   END TASK_REGION
+        -:   69:      
+       21:   70:	DO  2   IT  =  1, ITMAX
+branch  0 taken 95% (fallthrough)
+branch  1 taken 5%
+        -:   71:
+        -:   72:!		exchange bounds
+        -:   73:!DVM$   GET_ACTUAL (B2(2,:),B1(N1, :))
+      180:   74:        A1(N1+1,:) = B2(2, :)
+branch  0 taken 11% (fallthrough)
+branch  1 taken 89%
+      180:   75:        A2(1, :)   = B1(N1, :)
+branch  0 taken 11% (fallthrough)
+branch  1 taken 89%
+        -:   76:!DVM$   ACTUAL (A2(1, :),A1(N1+1,:))
+        -:   77:!DVM$	TASK_REGION MB
+        -:   78:!DVM$	ON   MB( 1 )
+        -:   79:!DVM$   REGION
+        -:   80:!DVM$	PARALLEL    ( J, I )   ON   B1(I, J),
+        -:   81:!DVM$*  SHADOW_RENEW ( A1 )
+      140:   82:	DO  J  =  2, K-1
+branch  0 taken 86% (fallthrough)
+branch  1 taken 14%
+      500:   83:            DO  I  =  2, N1
+branch  0 taken 75% (fallthrough)
+branch  1 taken 25%
+        -:   84:                 B1(I, J)=(A1(I-1, J) + A1(I,J-1) + 
+      480:   85:     *           A1(I+1,J) + A1(I,J+1))/4
+        -:   86:            ENDDO
+        -:   87:        ENDDO
+        -:   88:
+        -:   89:!DVM$	PARALLEL    ( J, I )   ON   A1(I, J)
+      140:   90:	DO  J  =  2, K-1
+branch  0 taken 86% (fallthrough)
+branch  1 taken 14%
+      500:   91:   	    DO  I  =  2, N1
+branch  0 taken 75% (fallthrough)
+branch  1 taken 25%
+      480:   92:                A1(I, J) =  B1( I, J )
+        -:   93:            ENDDO
+        -:   94:        ENDDO 
+        -:   95:!DVM$   END REGION
+        -:   96:!DVM$	END ON
+        -:   97:!DVM$	ON   MB( 2 )
+        -:   98:!DVM$   REGION
+        -:   99:!DVM$	PARALLEL    ( J, I )   ON   B2(I, J),
+        -:  100:!DVM$*  SHADOW_RENEW ( A2 )
+      140:  101:	DO  J  =  2, K-1
+branch  0 taken 86% (fallthrough)
+branch  1 taken 14%
+      500:  102:            DO  I  =  2, N2
+branch  0 taken 75% (fallthrough)
+branch  1 taken 25%
+        -:  103:                B2(I,J) = (A2(I-1,J) + A2(I,J-1) + 
+      480:  104:     *          A2(I+1,J) + A2(I,J+1))/4
+        -:  105:            ENDDO
+        -:  106:        ENDDO          
+        -:  107:!DVM$	PARALLEL    ( J, I )   ON   A2(I, J)
+      140:  108:	DO  J  =  2, K-1
+branch  0 taken 86% (fallthrough)
+branch  1 taken 14%
+      500:  109:            DO  I  =  2, N2
+branch  0 taken 75% (fallthrough)
+branch  1 taken 25%
+      480:  110:                A2(I, J) =  B2( I, J )
+        -:  111:            ENDDO
+        -:  112:        ENDDO 
+        -:  113:!DVM$   END REGION
+        -:  114:!DVM$	END ON
+        -:  115:!DVM$	END  TASK_REGION
+        1:  116:2       CONTINUE
+        -:  117:!1-task JACOBI   
+        -:  118:
+        -:  119:!DVM$   REGION   
+        -:  120:!DVM$   PARALLEL    (J,I)   ON   A(I, J)
+        -:  121:!		nest of two parallel loops, iteration (i,j) will be executed on 
+        -:  122:!		processor, which is owner of element A(i,j) 
+        9:  123:            DO  J  =  1, K
+branch  0 taken 89% (fallthrough)
+branch  1 taken 11%
+       73:  124:                DO  I  =  1, K
+branch  0 taken 89% (fallthrough)
+branch  1 taken 11%
+       64:  125:                    A(I,  J)  =  0.
+       72:  126:                    IF(I.EQ.1.OR.J.EQ.1.OR.I.EQ.K.OR.J.EQ.K) THEN
+branch  0 taken 77% (fallthrough)
+branch  1 taken 23%
+branch  2 taken 27% (fallthrough)
+branch  3 taken 73%
+       28:  127:                       B(I,  J) = 0.
+        -:  128:                    ELSE
+       36:  129:                       B(I,  J)  = ( 1. + I + J )
+        -:  130:                    ENDIF
+        -:  131:                ENDDO
+        -:  132:            ENDDO
+        -:  133:!DVM$   END REGION            
+       21:  134:        DO  IT  =  1,  ITMAX
+branch  0 taken 95% (fallthrough)
+branch  1 taken 5%
+        -:  135:!DVM$  REGION       
+        -:  136:!DVM$   PARALLEL  (J,  I)   ON  A(I,  J)
+        -:  137:!		variable EPS is used for calculation of maximum value
+      140:  138:                  DO  J  =  2, K-1
+branch  0 taken 86% (fallthrough)
+branch  1 taken 14%
+      860:  139:                      DO  I  =  2, K-1
+branch  0 taken 86% (fallthrough)
+branch  1 taken 14%
+      840:  140:                         A(I, J)  =  B(I, J)
+        -:  141:                      ENDDO
+        -:  142:                  ENDDO
+        -:  143:!DVM$   PARALLEL  (J,  I)   ON  B(I,  J),   SHADOW_RENEW   (A)
+        -:  144:!		Copying shadow elements of array A from 
+        -:  145:!		neighbouring processors before loop execution
+      141:  146:                  DO  J = 2,  K-1
+branch  0 taken 86% (fallthrough)
+branch  1 taken 14%
+      860:  147:                      DO  I = 2,  K-1
+branch  0 taken 86% (fallthrough)
+branch  1 taken 14%
+        -:  148:        B(I, J) =  (A( I-1, J ) + A( I, J-1 ) + A( I+1, J)+
+      840:  149:     *                        A( I, J+1 )) / 4
+        -:  150:                      ENDDO
+        -:  151:                  ENDDO
+        -:  152:!DVM$ END REGION
+        -:  153:        ENDDO
+        -:  154:!DVM$ GET_ACTUAL (B,B1,B2)
+        -:  155:!   compare 2-task JACOBI with 1-task JACOBI
+       33:  156:      A(2:N1,:) = B1(2:N1,:)
+branch  0 taken 11% (fallthrough)
+branch  1 taken 89%
+branch  2 taken 75% (fallthrough)
+branch  3 taken 25%
+       33:  157:      A(N1+1:N1+N2-1,:) = B2(2:N2,:)
+branch  0 taken 11% (fallthrough)
+branch  1 taken 89%
+branch  2 taken 75% (fallthrough)
+branch  3 taken 25%
+        -:  158:      ERRT = ER
+        -:  159:!DVM$ PARALLEL (I,J)  ON B(I,J), REDUCTION(MIN(ERRT))
+        7:  160:      DO I = 2, K-1
+branch  0 taken 86% (fallthrough)
+branch  1 taken 14%
+       43:  161:         DO J = 2, K-1
+branch  0 taken 86% (fallthrough)
+branch  1 taken 14%
+       42:  162:            IF(A(I,J) .NE. B(I,J)) THEN
+branch  0 taken 0% (fallthrough)
+branch  1 taken 100%
+    #####:  163:               ERRT = MIN(ERRT,I)
+        -:  164:            ENDIF 
+        -:  165:         ENDDO
+        -:  166:      ENDDO 
+        1:  167:      IF (ERRT .EQ. ER) THEN     
+branch  0 taken 100% (fallthrough)
+branch  1 taken 0%
+        1:  168:          CALL ANSYES(TNAME)
+call    0 returned 100%
+        -:  169:      ELSE
+    #####:  170:          CALL ANSNO(TNAME)
+call    0 never executed
+        -:  171:      ENDIF 
+        -:  172:
+       1*:  173:      DEALLOCATE (B,B1,B2,A,A1,A2)
+branch  0 taken 0% (fallthrough)
+branch  1 taken 100%
+call    2 never executed
+branch  3 taken 0% (fallthrough)
+branch  4 taken 100%
+call    5 never executed
+branch  6 taken 0% (fallthrough)
+branch  7 taken 100%
+call    8 never executed
+branch  9 taken 0% (fallthrough)
+branch 10 taken 100%
+call   11 never executed
+branch 12 taken 0% (fallthrough)
+branch 13 taken 100%
+call   14 never executed
+branch 15 taken 0% (fallthrough)
+branch 16 taken 100%
+call   17 never executed
+        1:  174:      PRINT *,  '=== END OF taskst12 ====================='
+call    0 returned 100%
+call    1 returned 100%
+call    2 returned 100%
+        -:  175:
+function main called 1 returned 100% blocks executed 100%
+        1:  176:      END
+call    0 returned 100%
+call    1 returned 100%
+call    2 returned 100%
+        -:  177:
+function dpt_ called 0 returned 0% blocks executed 0%
+    #####:  178:      SUBROUTINE DPT(LP,HP,NT)
+        -:  179:!     distributing processors for NT tasks (NT = 2)      
+        -:  180:      INTEGER LP(2), HP(2)
+        -:  181:      NUMBER_OF_PROCESSORS() = 1
+        -:  182:!DVM$ DEBUG 1 (D = 0)
+       1*:  183:      NP = NUMBER_OF_PROCESSORS()
+       1*:  184:      NTP = NP/NT
+        -:  185:      IF(NP.EQ.1) THEN
+       1*:  186:         LP(1) = 1
+       1*:  187:         HP(1) = 1
+       1*:  188:         LP(2) = 1
+       1*:  189:         HP(2) = 1
+branch  0 taken 0% (fallthrough)
+branch  1 taken 100%
+        -:  190:      ELSE
+        -:  191:         LP(1) = 1
+        -:  192:         HP(1) = NTP
+        -:  193:         LP(2) = NTP+1
+        -:  194:         HP(2) = NP
+        -:  195:      END IF
+        -:  196:!DVM$ ENDDEBUG 1
+    #####:  197:      END
+        -:  198:C -------------------------------------------------
+        -:  199:
+function ansyes_ called 1 returned 100% blocks executed 100%
+        1:  200:      SUBROUTINE ANSYES(NAME)
+        -:  201:      CHARACTER*8 NAME
+        1:  202:      PRINT *, NAME, '  -  complete'
+call    0 returned 100%
+call    1 returned 100%
+call    2 returned 100%
+call    3 returned 100%
+        1:  203:      END
+function ansno_ called 0 returned 0% blocks executed 0%
+    #####:  204:      SUBROUTINE ANSNO (NAME)
+        -:  205:      CHARACTER*8 NAME
+    #####:  206:      PRINT *, NAME, '  -  ***error'
+call    0 never executed
+call    1 never executed
+call    2 never executed
+call    3 never executed
+    #####:  207:      END

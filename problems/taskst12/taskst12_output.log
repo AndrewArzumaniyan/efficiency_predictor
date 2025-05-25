@@ -1,0 +1,74 @@
+=== Processing file: taskst12.f ===
+Date and time: 2025-05-25 22:51:58
+Dimension: 1d
+==================================================
+
+Copied ..\graduation_data_experiment\sources\1d\taskst12.f to ./data/raw\1d\taskst12\taskst12.f
+Command: gfortran -O3 -g -fprofile-arcs -ftest-coverage "./data/raw\1d\taskst12\taskst12.f" -o "./data/raw\1d\taskst12\taskst12"
+Return code: 0
+--------------------------------------------------
+Command: "./data/raw\1d\taskst12\taskst12"
+Return code: 0
+Output:
+ ===START OF taskst12 =====================
+ taskst12  -  complete
+ === END OF taskst12 =====================
+
+--------------------------------------------------
+Command: gcov -b "./data/raw\1d\taskst12\taskst12.f"
+Return code: 0
+Output:
+File 'data/raw/1d/taskst12/taskst12.f'
+Lines executed:89.87% of 79
+Branches executed:100.00% of 96
+Taken at least once:85.42% of 96
+Calls executed:45.16% of 31
+Creating 'taskst12.f.gcov'
+
+Lines executed:89.87% of 79
+
+--------------------------------------------------
+Copied and removed ./taskst12.f.gcov to ./data/raw\1d\taskst12\taskst12.f.gcov
+Command: "../SAPFOR/_bin/Release/Sapfor_F.exe" -parse -spf "./data/raw\1d\taskst12\taskst12.f"
+Return code: 0
+Output:
+SAPFOR version is 2410, build date: Apr 23 2025 11:52:44, c++ version 201703
+  parse file './data/raw\1d\taskst12\taskst12.f'
+  options: -spf 
+files compilation order:
+  ./data/raw\1d\taskst12\taskst12.f
+Parsing was completed successfully
+
+--------------------------------------------------
+Command: "../SAPFOR/_bin/Release/Sapfor_F.exe" -passN GET_STATS_FOR_PREDICTOR -keepDVM
+Return code: 0
+Output:
+SAPFOR version is 2410, build date: Apr 23 2025 11:52:44, c++ version 201703
+code for pass GET_STATS_FOR_PREDICTOR is 79
+RUN PASS with name VERIFY_FUNC_DECL
+  Analyzing: data/raw\1d\taskst12\taskst12.f
+PROFILE: time for this pass = 0.000000 sec (total 0.001000 sec)
+RUN PASS with name FILE_LINE_INFO
+  Analyzing: data/raw\1d\taskst12\taskst12.f
+  All lines in project 207
+PROFILE: time for this pass = 0.000000 sec (total 0.001000 sec)
+RUN PASS with name BUILD_INCLUDE_DEPENDENCIES
+  Analyzing: data/raw\1d\taskst12\taskst12.f
+PROFILE: time for this pass = 0.000000 sec (total 0.001000 sec)
+RUN PASS with name CORRECT_VAR_DECL
+  Analyzing: data/raw\1d\taskst12\taskst12.f
+PROFILE: time for this pass = 0.000000 sec (total 0.002000 sec)
+RUN PASS with name VERIFY_OPERATORS
+  Analyzing: data/raw\1d\taskst12\taskst12.f
+PROFILE: time for this pass = 0.000000 sec (total 0.002000 sec)
+RUN PASS with name VERIFY_ENDDO
+  Analyzing: data/raw\1d\taskst12\taskst12.f
+  ERROR: Loop on line 70 does not have END DO
+exception occurred
+ERROR - [#1018: data/raw\1d\taskst12\taskst12.f: line 70]: This loop does not have END DO format
+
+--------------------------------------------------
+Исходный файл ./info.json не существует, копирование невозможно
+
+==================================================
+Processing of taskst12.f completed successfully at 2025-05-25 22:51:58

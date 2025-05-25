@@ -1,0 +1,220 @@
+=== Processing file: f2c_select.f ===
+Date and time: 2025-05-25 22:51:44
+Dimension: 1d
+==================================================
+
+Copied ..\graduation_data_experiment\sources\1d\f2c_select.f to ./data/raw\1d\f2c_select\f2c_select.f
+Command: gfortran -O3 -g -fprofile-arcs -ftest-coverage "./data/raw\1d\f2c_select\f2c_select.f" -o "./data/raw\1d\f2c_select\f2c_select"
+Return code: 0
+--------------------------------------------------
+Command: "./data/raw\1d\f2c_select\f2c_select"
+Return code: 0
+Output:
+ ===START OF F2C_SELECT ========================
+ select_with_default     -  complete
+ select_only_default     -  complete
+ select_without_default  -  complete
+ select_interval         -  complete
+ select_multi_interval   -  complete
+ select_multi_interval   -  complete
+ === END OF F2C_SELECT ========================= 
+
+--------------------------------------------------
+Command: gcov -b "./data/raw\1d\f2c_select\f2c_select.f"
+Return code: 0
+Output:
+File 'data/raw/1d/f2c_select/f2c_select.f'
+Lines executed:94.06% of 202
+Branches executed:100.00% of 144
+Taken at least once:76.39% of 144
+Calls executed:47.17% of 53
+Creating 'f2c_select.f.gcov'
+
+Lines executed:94.06% of 202
+
+--------------------------------------------------
+Copied and removed ./f2c_select.f.gcov to ./data/raw\1d\f2c_select\f2c_select.f.gcov
+Command: "../SAPFOR/_bin/Release/Sapfor_F.exe" -parse -spf "./data/raw\1d\f2c_select\f2c_select.f"
+Return code: 0
+Output:
+SAPFOR version is 2410, build date: Apr 23 2025 11:52:44, c++ version 201703
+  parse file './data/raw\1d\f2c_select\f2c_select.f'
+  options: -spf 
+files compilation order:
+  ./data/raw\1d\f2c_select\f2c_select.f
+Parsing was completed successfully
+
+--------------------------------------------------
+Command: "../SAPFOR/_bin/Release/Sapfor_F.exe" -passN GET_STATS_FOR_PREDICTOR -keepDVM
+Return code: 0
+Output:
+SAPFOR version is 2410, build date: Apr 23 2025 11:52:44, c++ version 201703
+code for pass GET_STATS_FOR_PREDICTOR is 79
+RUN PASS with name VERIFY_FUNC_DECL
+  Analyzing: data/raw\1d\f2c_select\f2c_select.f
+PROFILE: time for this pass = 0.000000 sec (total 0.015000 sec)
+RUN PASS with name FILE_LINE_INFO
+  Analyzing: data/raw\1d\f2c_select\f2c_select.f
+  All lines in project 500
+PROFILE: time for this pass = 0.000000 sec (total 0.016000 sec)
+RUN PASS with name BUILD_INCLUDE_DEPENDENCIES
+  Analyzing: data/raw\1d\f2c_select\f2c_select.f
+PROFILE: time for this pass = 0.000000 sec (total 0.016000 sec)
+RUN PASS with name CORRECT_VAR_DECL
+  Analyzing: data/raw\1d\f2c_select\f2c_select.f
+PROFILE: time for this pass = 0.000000 sec (total 0.016000 sec)
+RUN PASS with name VERIFY_OPERATORS
+  Analyzing: data/raw\1d\f2c_select\f2c_select.f
+PROFILE: time for this pass = 0.000000 sec (total 0.016000 sec)
+RUN PASS with name VERIFY_ENDDO
+  Analyzing: data/raw\1d\f2c_select\f2c_select.f
+PROFILE: time for this pass = 0.000000 sec (total 0.017000 sec)
+RUN PASS with name VERIFY_INCLUDES
+  Analyzing: data/raw\1d\f2c_select\f2c_select.f
+PROFILE: time for this pass = 0.000000 sec (total 0.017000 sec)
+RUN PASS with name PREPROC_ALLOCATES
+  Analyzing: data/raw\1d\f2c_select\f2c_select.f
+  attribute (33 data/raw\1d\f2c_select\f2c_select.f) is added to declaration on line 26 of data/raw\1d\f2c_select\f2c_select.f file
+  attribute (34 data/raw\1d\f2c_select\f2c_select.f) is added to declaration on line 27 of data/raw\1d\f2c_select\f2c_select.f file
+  attribute (95 data/raw\1d\f2c_select\f2c_select.f) is added to declaration on line 26 of data/raw\1d\f2c_select\f2c_select.f file
+  attribute (96 data/raw\1d\f2c_select\f2c_select.f) is added to declaration on line 27 of data/raw\1d\f2c_select\f2c_select.f file
+  attribute (110 data/raw\1d\f2c_select\f2c_select.f) is added to declaration on line 103 of data/raw\1d\f2c_select\f2c_select.f file
+  attribute (111 data/raw\1d\f2c_select\f2c_select.f) is added to declaration on line 104 of data/raw\1d\f2c_select\f2c_select.f file
+  attribute (160 data/raw\1d\f2c_select\f2c_select.f) is added to declaration on line 103 of data/raw\1d\f2c_select\f2c_select.f file
+  attribute (161 data/raw\1d\f2c_select\f2c_select.f) is added to declaration on line 104 of data/raw\1d\f2c_select\f2c_select.f file
+  attribute (176 data/raw\1d\f2c_select\f2c_select.f) is added to declaration on line 169 of data/raw\1d\f2c_select\f2c_select.f file
+  attribute (177 data/raw\1d\f2c_select\f2c_select.f) is added to declaration on line 170 of data/raw\1d\f2c_select\f2c_select.f file
+  attribute (233 data/raw\1d\f2c_select\f2c_select.f) is added to declaration on line 169 of data/raw\1d\f2c_select\f2c_select.f file
+  attribute (234 data/raw\1d\f2c_select\f2c_select.f) is added to declaration on line 170 of data/raw\1d\f2c_select\f2c_select.f file
+  attribute (250 data/raw\1d\f2c_select\f2c_select.f) is added to declaration on line 243 of data/raw\1d\f2c_select\f2c_select.f file
+  attribute (251 data/raw\1d\f2c_select\f2c_select.f) is added to declaration on line 244 of data/raw\1d\f2c_select\f2c_select.f file
+  attribute (311 data/raw\1d\f2c_select\f2c_select.f) is added to declaration on line 243 of data/raw\1d\f2c_select\f2c_select.f file
+  attribute (312 data/raw\1d\f2c_select\f2c_select.f) is added to declaration on line 244 of data/raw\1d\f2c_select\f2c_select.f file
+  attribute (327 data/raw\1d\f2c_select\f2c_select.f) is added to declaration on line 320 of data/raw\1d\f2c_select\f2c_select.f file
+  attribute (328 data/raw\1d\f2c_select\f2c_select.f) is added to declaration on line 321 of data/raw\1d\f2c_select\f2c_select.f file
+  attribute (389 data/raw\1d\f2c_select\f2c_select.f) is added to declaration on line 320 of data/raw\1d\f2c_select\f2c_select.f file
+  attribute (390 data/raw\1d\f2c_select\f2c_select.f) is added to declaration on line 321 of data/raw\1d\f2c_select\f2c_select.f file
+  attribute (404 data/raw\1d\f2c_select\f2c_select.f) is added to declaration on line 397 of data/raw\1d\f2c_select\f2c_select.f file
+  attribute (405 data/raw\1d\f2c_select\f2c_select.f) is added to declaration on line 398 of data/raw\1d\f2c_select\f2c_select.f file
+  attribute (486 data/raw\1d\f2c_select\f2c_select.f) is added to declaration on line 397 of data/raw\1d\f2c_select\f2c_select.f file
+  attribute (487 data/raw\1d\f2c_select\f2c_select.f) is added to declaration on line 398 of data/raw\1d\f2c_select\f2c_select.f file
+PROFILE: time for this pass = 0.000000 sec (total 0.017000 sec)
+RUN PASS with name CHECK_PAR_REG_DIR
+  Analyzing: data/raw\1d\f2c_select\f2c_select.f
+PROFILE: time for this pass = 0.000000 sec (total 0.018000 sec)
+RUN PASS with name FILL_PARALLEL_REG_IR
+  Analyzing: data/raw\1d\f2c_select\f2c_select.f
+PROFILE: time for this pass = 0.000000 sec (total 0.018000 sec)
+RUN PASS with name GET_ALL_ARRAY_DECL
+  Analyzing: data/raw\1d\f2c_select\f2c_select.f
+PROFILE: time for this pass = 0.002000 sec (total 0.020000 sec)
+RUN PASS with name FILL_COMMON_BLOCKS
+  Analyzing: data/raw\1d\f2c_select\f2c_select.f
+PROFILE: time for this pass = 0.000000 sec (total 0.020000 sec)
+RUN PASS with name PARSE_OMP_DIRS
+  Analyzing: data/raw\1d\f2c_select\f2c_select.f
+PROFILE: time for this pass = 0.000000 sec (total 0.021000 sec)
+RUN PASS with name PREPROC_SPF
+  Analyzing: data/raw\1d\f2c_select\f2c_select.f
+PROFILE: time for this pass = 0.000000 sec (total 0.021000 sec)
+RUN PASS with name CREATE_INTER_TREE
+  Analyzing: data/raw\1d\f2c_select\f2c_select.f
+PROFILE: time for this pass = 0.002000 sec (total 0.023000 sec)
+RUN PASS with name GCOV_PARSER
+  Analyzing: data/raw\1d\f2c_select\f2c_select.f
+   Error: unable to open file statistic.txt
+PROFILE: time for this pass = 0.000000 sec (total 0.024000 sec)
+RUN PASS with name VERIFY_FORMAT
+  Analyzing: data/raw\1d\f2c_select\f2c_select.f
+PROFILE: time for this pass = 0.000000 sec (total 0.024000 sec)
+RUN PASS with name VERIFY_DVM_DIRS
+  Analyzing: data/raw\1d\f2c_select\f2c_select.f
+PROFILE: time for this pass = 0.000000 sec (total 0.024000 sec)
+RUN PASS with name PRIVATE_CALL_GRAPH_STAGE1
+  Analyzing: data/raw\1d\f2c_select\f2c_select.f
+PROFILE: time for this pass = 0.000000 sec (total 0.025000 sec)
+RUN PASS with name PRIVATE_CALL_GRAPH_STAGE2
+  Analyzing: data/raw\1d\f2c_select\f2c_select.f
+PROFILE: time for this pass = 0.000000 sec (total 0.025000 sec)
+RUN PASS with name MACRO_EXPANSION
+  Analyzing: data/raw\1d\f2c_select\f2c_select.f
+PROFILE: time for this pass = 0.000000 sec (total 0.025000 sec)
+RUN PASS with name CONVERT_ASSIGN_TO_LOOP
+  Analyzing: data/raw\1d\f2c_select\f2c_select.f
+PROFILE: time for this pass = 0.000000 sec (total 0.026000 sec)
+RUN PASS with name DEF_USE_STAGE1
+  Analyzing: data/raw\1d\f2c_select\f2c_select.f
+PROFILE: time for this pass = 0.001000 sec (total 0.027000 sec)
+RUN PASS with name DEF_USE_STAGE2
+  Analyzing: data/raw\1d\f2c_select\f2c_select.f
+PROFILE: time for this pass = 0.000000 sec (total 0.027000 sec)
+RUN PASS with name VERIFY_COMMON
+  Analyzing: data/raw\1d\f2c_select\f2c_select.f
+PROFILE: time for this pass = 0.000000 sec (total 0.028000 sec)
+RUN PASS with name CALL_GRAPH_IR
+  Analyzing: data/raw\1d\f2c_select\f2c_select.f
+PROFILE: time for this pass = 0.001000 sec (total 0.029000 sec)
+RUN PASS with name BUILD_IR
+  Analyzing: data/raw\1d\f2c_select\f2c_select.f
+  count of functions 9, count of lvls 3
+     RD time for 'ansyes' function is 0.000 sec, iters 1
+     RD time for 'ansno' function is 0.000 sec, iters 1
+
+     RD time for 'select_only_default' function is 0.000 sec, iters 3
+     RD time for 'select_without_default' function is 0.000 sec, iters 3
+     RD time for 'select_interval' function is 0.000 sec, iters 3
+     RD time for 'select_multi_interval' function is 0.000 sec, iters 3
+     RD time for 'select_multi_select' function is 0.000 sec, iters 3
+     RD time for 'select_with_default' function is 0.000 sec, iters 3
+
+     RD time for 'select_simple' function is 0.000 sec, iters 1
+
+PROFILE: time for this pass = 0.002000 sec (total 0.032000 sec)
+RUN PASS with name SUBST_EXPR_RD
+  Analyzing: data/raw\1d\f2c_select\f2c_select.f
+PROFILE: time for this pass = 0.001000 sec (total 0.033000 sec)
+RUN PASS with name LOOP_GRAPH
+  Analyzing: data/raw\1d\f2c_select\f2c_select.f
+PROFILE: time for this pass = 0.000000 sec (total 0.034000 sec)
+RUN PASS with name CALL_GRAPH
+  Analyzing: data/raw\1d\f2c_select\f2c_select.f
+PROFILE: time for this pass = 0.002000 sec (total 0.036000 sec)
+RUN PASS with name CALL_GRAPH2
+  Analyzing: data/raw\1d\f2c_select\f2c_select.f
+  run for func select_simple
+  run for func select_with_default
+  run for func select_only_default
+  run for func select_without_default
+  run for func select_interval
+  run for func select_multi_interval
+  run for func select_multi_select
+  run for func ansyes
+  run for func ansno
+PROFILE: time for this pass = 0.001000 sec (total 0.038000 sec)
+RUN PASS with name GET_STATS_FOR_PREDICTOR
+  Analyzing: data/raw\1d\f2c_select\f2c_select.f
+    PAR LOOP [41 data/raw\1d\f2c_select\f2c_select.f] total exec 18, total exec lines 2, avg 9.0000000000000000e+00
+    PAR LOOP [47 data/raw\1d\f2c_select\f2c_select.f] total exec 56, total exec lines 13, avg 4.3076923076923075e+00
+    PAR LOOP [81 data/raw\1d\f2c_select\f2c_select.f] total exec 18446744073709551611, total exec lines 5, avg 3.6893488147419105e+18
+    PAR LOOP [118 data/raw\1d\f2c_select\f2c_select.f] total exec 18, total exec lines 2, avg 9.0000000000000000e+00
+    PAR LOOP [124 data/raw\1d\f2c_select\f2c_select.f] total exec 31, total exec lines 7, avg 4.4285714285714288e+00
+    PAR LOOP [146 data/raw\1d\f2c_select\f2c_select.f] total exec 18446744073709551611, total exec lines 5, avg 3.6893488147419105e+18
+    PAR LOOP [184 data/raw\1d\f2c_select\f2c_select.f] total exec 18, total exec lines 2, avg 9.0000000000000000e+00
+    PAR LOOP [190 data/raw\1d\f2c_select\f2c_select.f] total exec 55, total exec lines 11, avg 5.0000000000000000e+00
+    PAR LOOP [219 data/raw\1d\f2c_select\f2c_select.f] total exec 18446744073709551611, total exec lines 5, avg 3.6893488147419105e+18
+    PAR LOOP [258 data/raw\1d\f2c_select\f2c_select.f] total exec 18, total exec lines 2, avg 9.0000000000000000e+00
+bad gcov info
+Internal error at line 151 and file PredictScheme.cpp
+exception occurred
+WARR - [#1049: data/raw\1d\f2c_select\f2c_select.f: line 495]: Function is impure due to this operator usage
+WARR - [#1049: data/raw\1d\f2c_select\f2c_select.f: line 499]: Function is impure due to this operator usage
+WARR - [#1049: data/raw\1d\f2c_select\f2c_select.f: line 495]: Function is impure due to this operator usage
+WARR - [#1049: data/raw\1d\f2c_select\f2c_select.f: line 499]: Function is impure due to this operator usage
+WARR - [#1049: data/raw\1d\f2c_select\f2c_select.f: line 495]: Function is impure due to this operator usage
+WARR - [#1049: data/raw\1d\f2c_select\f2c_select.f: line 499]: Function is impure due to this operator usage
+
+--------------------------------------------------
+Исходный файл ./info.json не существует, копирование невозможно
+
+==================================================
+Processing of f2c_select.f completed successfully at 2025-05-25 22:51:45

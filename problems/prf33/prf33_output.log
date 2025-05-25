@@ -1,0 +1,460 @@
+=== Processing file: prf33.f ===
+Date and time: 2025-05-25 22:53:06
+Dimension: 3d
+==================================================
+
+Copied ..\graduation_data_experiment\sources\3d\prf33.f to ./data/raw\3d\prf33\prf33.f
+Command: gfortran -O3 -g -fprofile-arcs -ftest-coverage "./data/raw\3d\prf33\prf33.f" -o "./data/raw\3d\prf33\prf33"
+Return code: 1
+Error output:
+./data/raw\3d\prf33\prf33.f:1:2:
+
+    1 | program prf33
+      |  1
+Error: Non-numeric character in statement label at (1)
+./data/raw\3d\prf33\prf33.f:4:6:
+
+    4 |     print *, '===START OF PRF33========================'
+      |      1
+Error: Non-numeric character in statement label at (1)
+./data/raw\3d\prf33\prf33.f:6:6:
+
+    6 |     call prf3301
+      |      1
+Error: Non-numeric character in statement label at (1)
+./data/raw\3d\prf33\prf33.f:7:6:
+
+    7 |     call prf3302
+      |      1
+Error: Non-numeric character in statement label at (1)
+./data/raw\3d\prf33\prf33.f:8:6:
+
+    8 |     call prf3303
+      |      1
+Error: Non-numeric character in statement label at (1)
+./data/raw\3d\prf33\prf33.f:10:6:
+
+   10 |     print *, '===END OF PRF33=========================='
+      |      1
+Error: Non-numeric character in statement label at (1)
+./data/raw\3d\prf33\prf33.f:11:2:
+
+   11 | end
+      |  1
+Error: Non-numeric character in statement label at (1)
+./data/raw\3d\prf33\prf33.f:13:2:
+
+   13 | subroutine prf3301
+      |  1
+Error: Non-numeric character in statement label at (1)
+./data/raw\3d\prf33\prf33.f:14:6:
+
+   14 |     integer, parameter ::  N = 16, M = 8, K = 8, NL = 1000, NIT = 3
+      |      1
+Error: Non-numeric character in statement label at (1)
+./data/raw\3d\prf33\prf33.f:15:6:
+
+   15 |     integer, allocatable :: A( :, :, : ), B( :, :, : ), C( :, :, : )
+      |      1
+Error: Non-numeric character in statement label at (1)
+./data/raw\3d\prf33\prf33.f:16:6:
+
+   16 |     character * 7 :: tname = 'PRF3301'
+      |      1
+Error: Non-numeric character in statement label at (1)
+./data/raw\3d\prf33\prf33.f:25:6:
+
+   25 |     allocate ( B( N, M, K ), A( N, M, K ), C( N, M, K ) )
+      |      1
+Error: Non-numeric character in statement label at (1)
+./data/raw\3d\prf33\prf33.f:26:6:
+
+   26 |     call serial3( C, N, M, K, NL )
+      |      1
+Error: Non-numeric character in statement label at (1)
+./data/raw\3d\prf33\prf33.f:29:6:
+
+   29 |     do i = 1, N
+      |      1
+Error: Non-numeric character in statement label at (1)
+./data/raw\3d\prf33\prf33.f:35:6:
+
+   35 |     enddo
+      |      1
+Error: Non-numeric character in statement label at (1)
+./data/raw\3d\prf33\prf33.f:37:6:
+
+   37 |     do it = 1, NIT
+      |      1
+Error: Non-numeric character in statement label at (1)
+./data/raw\3d\prf33\prf33.f:57:72:
+
+   57 |         if ( ( ib1 .eq. C( N / 2, M / 2, K / 2 ) ) .and. ( ib2 .eq. C( N / 2, M, K ) ) .and. &
+      |                                                                        1
+Error: Syntax error in argument list at (1)
+./data/raw\3d\prf33\prf33.f:61:72:
+
+   61 |         else
+      |                                                                        1
+Error: Unexpected ELSE statement at (1)
+./data/raw\3d\prf33\prf33.f:63:11:
+
+   63 |         endif
+      |           1
+Error: Expecting END PROGRAM statement at (1)
+./data/raw\3d\prf33\prf33.f:65:72:
+
+   65 |         if ( it .eq. 2 ) cycle
+      |                                                                        1
+Error: CYCLE statement at (1) is not within a construct
+./data/raw\3d\prf33\prf33.f:69:6:
+
+   69 |     enddo
+      |      1
+Error: Non-numeric character in statement label at (1)
+./data/raw\3d\prf33\prf33.f:70:6:
+
+   70 |     deallocate( A, B, C )
+      |      1
+Error: Non-numeric character in statement label at (1)
+./data/raw\3d\prf33\prf33.f:71:2:
+
+   71 | end
+      |  1
+Error: Non-numeric character in statement label at (1)
+./data/raw\3d\prf33\prf33.f:73:2:
+
+   73 | subroutine prf3302
+      |  1
+Error: Non-numeric character in statement label at (1)
+./data/raw\3d\prf33\prf33.f:74:6:
+
+   74 |     integer, parameter ::  N = 16, M = 8, K = 8, NL = 1000, NIT = 3
+      |      1
+Error: Non-numeric character in statement label at (1)
+./data/raw\3d\prf33\prf33.f:75:6:
+
+   75 |     integer, allocatable :: A( :, :, : ), B( :, :, : ), C( :, :, : ), D( :, :, : )
+      |      1
+Error: Non-numeric character in statement label at (1)
+./data/raw\3d\prf33\prf33.f:76:6:
+
+   76 |     character * 7 :: tname = 'PRF3302'
+      |      1
+Error: Non-numeric character in statement label at (1)
+./data/raw\3d\prf33\prf33.f:85:6:
+
+   85 |     allocate ( A( N, M, K ), B( N, M, K ), C( N, M, K ), D( N, M, K ) )
+      |      1
+Error: Non-numeric character in statement label at (1)
+./data/raw\3d\prf33\prf33.f:86:6:
+
+   86 |     call serial3( C, N, M, K, NL )
+      |      1
+Error: Non-numeric character in statement label at (1)
+./data/raw\3d\prf33\prf33.f:89:6:
+
+   89 |     do i = 1, N
+      |      1
+Error: Non-numeric character in statement label at (1)
+./data/raw\3d\prf33\prf33.f:95:6:
+
+   95 |     enddo
+      |      1
+Error: Non-numeric character in statement label at (1)
+./data/raw\3d\prf33\prf33.f:97:6:
+
+   97 |     do it = 1, NIT
+      |      1
+Error: Non-numeric character in statement label at (1)
+./data/raw\3d\prf33\prf33.f:144:18:
+
+  144 |                 D( N / 2, j, ii ) = A( N / 2, kj * j + kj1, kii * ii + kii1 )
+      |                  1
+Error: 'd' at (1) is not a variable
+./data/raw\3d\prf33\prf33.f:145:72:
+
+  145 |                 isumc4 = isumc4 + C( N / 2, kj * j + kj1, kii * ii + kii1 )
+      |                                                                        1
+Error: Syntax error in argument list at (1)
+./data/raw\3d\prf33\prf33.f:150:72:
+
+  150 |         if ( ( isumc1 .eq. isuma1 ) .and. ( isumc2 .eq. isuma2 ) .and. &
+      |                                                                        1
+Error: Syntax error in expression at (1)
+./data/raw\3d\prf33\prf33.f:153:72:
+
+  153 |         else
+      |                                                                        1
+Error: Unexpected ELSE statement at (1)
+./data/raw\3d\prf33\prf33.f:155:11:
+
+  155 |         endif
+      |           1
+Error: Expecting END PROGRAM statement at (1)
+./data/raw\3d\prf33\prf33.f:157:72:
+
+  157 |         if ( it .eq. 2 ) cycle
+      |                                                                        1
+Error: CYCLE statement at (1) is not within a construct
+./data/raw\3d\prf33\prf33.f:162:6:
+
+  162 |     enddo
+      |      1
+Error: Non-numeric character in statement label at (1)
+./data/raw\3d\prf33\prf33.f:163:6:
+
+  163 |     deallocate( A, B, C, D )
+      |      1
+Error: Non-numeric character in statement label at (1)
+./data/raw\3d\prf33\prf33.f:164:2:
+
+  164 | end
+      |  1
+Error: Non-numeric character in statement label at (1)
+./data/raw\3d\prf33\prf33.f:166:2:
+
+  166 | subroutine prf3303
+      |  1
+Error: Non-numeric character in statement label at (1)
+./data/raw\3d\prf33\prf33.f:167:6:
+
+  167 |     integer, parameter ::  N = 16, M = 8, K = 8, NL = 1000, NIT = 3
+      |      1
+Error: Non-numeric character in statement label at (1)
+./data/raw\3d\prf33\prf33.f:168:6:
+
+  168 |     integer, allocatable :: A( :, :, : ), B( :, :, : ), C( :, :, : ), A1( :, :, : )
+      |      1
+Error: Non-numeric character in statement label at (1)
+./data/raw\3d\prf33\prf33.f:169:6:
+
+  169 |     character * 7 :: tname = 'PRF3303'
+      |      1
+Error: Non-numeric character in statement label at (1)
+./data/raw\3d\prf33\prf33.f:178:6:
+
+  178 |     allocate ( A( N, M, K ), B( N, M, K ), C( N, M, K ), A1( N, M, K ) )
+      |      1
+Error: Non-numeric character in statement label at (1)
+./data/raw\3d\prf33\prf33.f:179:6:
+
+  179 |     call serial3( C, N, M, K, NL )
+      |      1
+Error: Non-numeric character in statement label at (1)
+./data/raw\3d\prf33\prf33.f:182:6:
+
+  182 |     do i = 1, N
+      |      1
+Error: Non-numeric character in statement label at (1)
+./data/raw\3d\prf33\prf33.f:189:6:
+
+  189 |     enddo
+      |      1
+Error: Non-numeric character in statement label at (1)
+./data/raw\3d\prf33\prf33.f:191:6:
+
+  191 |     do it = 1, NIT
+      |      1
+Error: Non-numeric character in statement label at (1)
+./data/raw\3d\prf33\prf33.f:210:72:
+
+  210 |                     if ( B( i, j, ii ) .ne. C( N / 2, M / 2, K / 2 ) ) then
+      |                                                                        1
+Error: Syntax error in IF-clause after (1)
+./data/raw\3d\prf33\prf33.f:214:23:
+
+  214 |                     endif
+      |                       1
+Error: Expecting END DO statement at (1)
+./data/raw\3d\prf33\prf33.f:291:66:
+
+  291 |         if ( ( nloopi1 .eq. NL ) .and. ( nloopi2 .eq. NL ) .and. &
+      |                                                                  1
+Error: Syntax error in expression at (1)
+./data/raw\3d\prf33\prf33.f:294:72:
+
+  294 |         else
+      |                                                                        1
+Error: Unexpected ELSE statement at (1)
+./data/raw\3d\prf33\prf33.f:296:11:
+
+  296 |         endif
+      |           1
+Error: Expecting END PROGRAM statement at (1)
+./data/raw\3d\prf33\prf33.f:298:72:
+
+  298 |         if ( it .eq. 2 ) cycle
+      |                                                                        1
+Error: CYCLE statement at (1) is not within a construct
+./data/raw\3d\prf33\prf33.f:302:6:
+
+  302 |     enddo
+      |      1
+Error: Non-numeric character in statement label at (1)
+./data/raw\3d\prf33\prf33.f:303:6:
+
+  303 |     deallocate( A, B, C, A1 )
+      |      1
+Error: Non-numeric character in statement label at (1)
+./data/raw\3d\prf33\prf33.f:304:2:
+
+  304 | end
+      |  1
+Error: Non-numeric character in statement label at (1)
+./data/raw\3d\prf33\prf33.f:306:2:
+
+  306 | subroutine serial3( AR, N, M, K, NL )
+      |  1
+Error: Non-numeric character in statement label at (1)
+./data/raw\3d\prf33\prf33.f:307:6:
+
+  307 |     integer AR( N, M, K )
+      |      1
+Error: Non-numeric character in statement label at (1)
+./data/raw\3d\prf33\prf33.f:308:6:
+
+  308 |     integer NL
+      |      1
+Error: Non-numeric character in statement label at (1)
+./data/raw\3d\prf33\prf33.f:309:6:
+
+  309 |     do i = 1, N
+      |      1
+Error: Non-numeric character in statement label at (1)
+./data/raw\3d\prf33\prf33.f:315:6:
+
+  315 |     enddo
+      |      1
+Error: Non-numeric character in statement label at (1)
+./data/raw\3d\prf33\prf33.f:316:2:
+
+  316 | end
+      |  1
+Error: Non-numeric character in statement label at (1)
+./data/raw\3d\prf33\prf33.f:318:2:
+
+  318 | subroutine ansyes( name )
+      |  1
+Error: Non-numeric character in statement label at (1)
+./data/raw\3d\prf33\prf33.f:319:6:
+
+  319 |     character * 7 name
+      |      1
+Error: Non-numeric character in statement label at (1)
+./data/raw\3d\prf33\prf33.f:320:6:
+
+  320 |     print *, name, '  -  complete'
+      |      1
+Error: Non-numeric character in statement label at (1)
+./data/raw\3d\prf33\prf33.f:321:2:
+
+  321 | end
+      |  1
+Error: Non-numeric character in statement label at (1)
+./data/raw\3d\prf33\prf33.f:323:2:
+
+  323 | subroutine ansno( name )
+      |  1
+Error: Non-numeric character in statement label at (1)
+./data/raw\3d\prf33\prf33.f:324:6:
+
+  324 |     character * 7 name
+      |      1
+Error: Non-numeric character in statement label at (1)
+./data/raw\3d\prf33\prf33.f:325:6:
+
+  325 |     print *, name, '  -  ***error'
+      |      1
+Error: Non-numeric character in statement label at (1)
+./data/raw\3d\prf33\prf33.f:326:2:
+
+  326 | end
+      |  1
+Error: Non-numeric character in statement label at (1)
+f951.exe: Error: Unexpected end of file in './data/raw\3d\prf33\prf33.f'
+
+--------------------------------------------------
+Command: "./data/raw\3d\prf33\prf33"
+Return code: 1
+Error output:
+'"./data/raw\3d\prf33\prf33"' is not recognized as an internal or external command,
+operable program or batch file.
+
+--------------------------------------------------
+Command: gcov -b "./data/raw\3d\prf33\prf33.f"
+Return code: 1
+Output:
+No executable lines
+
+Error output:
+./data/raw\3d\prf33\prf33.gcno:cannot open notes file
+./data/raw\3d\prf33\prf33.gcda:cannot open data file, assuming not executed
+
+--------------------------------------------------
+Исходный файл ./prf33.f.gcov не существует, копирование невозможно
+Command: "../SAPFOR/_bin/Release/Sapfor_F.exe" -parse -spf "./data/raw\3d\prf33\prf33.f"
+Return code: 0
+Output:
+SAPFOR version is 2410, build date: Apr 23 2025 11:52:44, c++ version 201703
+  parse file './data/raw\3d\prf33\prf33.f'
+  options: -spf 
+files compilation order:
+  ./data/raw\3d\prf33\prf33.f
+Error 009 on line 1 of ./data/raw\3d\prf33\prf33.f: Illegal continuation line ignored
+Error 009 on line 4 of ./data/raw\3d\prf33\prf33.f: Illegal continuation line ignored
+Error 009 on line 6 of ./data/raw\3d\prf33\prf33.f: Illegal continuation line ignored
+Error 009 on line 7 of ./data/raw\3d\prf33\prf33.f: Illegal continuation line ignored
+Error 009 on line 8 of ./data/raw\3d\prf33\prf33.f: Illegal continuation line ignored
+Error 009 on line 10 of ./data/raw\3d\prf33\prf33.f: Illegal continuation line ignored
+Error 011 on line 11 of ./data/raw\3d\prf33\prf33.f: Non digit in statement number field
+Error 014 on line 11 of ./data/raw\3d\prf33\prf33.f: syntax error
+Error 030 on line 32 of ./data/raw\3d\prf33\prf33.f: Declaration among executables
+Error 014 on line 34 of ./data/raw\3d\prf33\prf33.f: syntax error
+Error 013 on line 57 of ./data/raw\3d\prf33\prf33.f: Unbalanced parentheses, statement skipped
+Error 010 on line 57 of ./data/raw\3d\prf33\prf33.f: Unclassifiable statement
+Error 013 on line 58 of ./data/raw\3d\prf33\prf33.f: Unbalanced parentheses, statement skipped
+Error 010 on line 58 of ./data/raw\3d\prf33\prf33.f: Unclassifiable statement
+Error 013 on line 59 of ./data/raw\3d\prf33\prf33.f: Unbalanced parentheses, statement skipped
+Error 010 on line 59 of ./data/raw\3d\prf33\prf33.f: Unclassifiable statement
+Error 032 on line 61 of ./data/raw\3d\prf33\prf33.f: ELSE out of place
+Error 260 on line 63 of ./data/raw\3d\prf33\prf33.f: Illegal END IF
+Parsing was completed with errors, throw code 0, errors count 18
+
+--------------------------------------------------
+Command: "../SAPFOR/_bin/Release/Sapfor_F.exe" -passN GET_STATS_FOR_PREDICTOR -keepDVM
+Return code: 0
+Output:
+SAPFOR version is 2410, build date: Apr 23 2025 11:52:44, c++ version 201703
+code for pass GET_STATS_FOR_PREDICTOR is 79
+RUN PASS with name VERIFY_FUNC_DECL
+  Analyzing: data/raw\3d\prf32\prf32.f
+PROFILE: time for this pass = 0.000000 sec (total 0.001000 sec)
+RUN PASS with name FILE_LINE_INFO
+  Analyzing: data/raw\3d\prf32\prf32.f
+  All lines in project 457
+PROFILE: time for this pass = 0.000000 sec (total 0.002000 sec)
+RUN PASS with name BUILD_INCLUDE_DEPENDENCIES
+  Analyzing: data/raw\3d\prf32\prf32.f
+PROFILE: time for this pass = 0.000000 sec (total 0.002000 sec)
+RUN PASS with name CORRECT_VAR_DECL
+  Analyzing: data/raw\3d\prf32\prf32.f
+PROFILE: time for this pass = 0.000000 sec (total 0.002000 sec)
+RUN PASS with name VERIFY_OPERATORS
+  Analyzing: data/raw\3d\prf32\prf32.f
+PROFILE: time for this pass = 0.000000 sec (total 0.003000 sec)
+RUN PASS with name VERIFY_ENDDO
+  Analyzing: data/raw\3d\prf32\prf32.f
+  ERROR: Loop on line 442 does not have END DO
+  ERROR: Loop on line 443 does not have END DO
+  ERROR: Loop on line 444 does not have END DO
+exception occurred
+ERROR - [#1018: data/raw\3d\prf32\prf32.f: line 442]: This loop does not have END DO format
+ERROR - [#1018: data/raw\3d\prf32\prf32.f: line 443]: This loop does not have END DO format
+ERROR - [#1018: data/raw\3d\prf32\prf32.f: line 444]: This loop does not have END DO format
+
+--------------------------------------------------
+Исходный файл ./info.json не существует, копирование невозможно
+
+==================================================
+Processing of prf33.f completed successfully at 2025-05-25 22:53:07

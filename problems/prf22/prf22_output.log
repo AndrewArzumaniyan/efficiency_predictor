@@ -1,0 +1,96 @@
+=== Processing file: prf22.f ===
+Date and time: 2025-05-25 22:52:16
+Dimension: 2d
+==================================================
+
+Copied ..\graduation_data_experiment\sources\2d\prf22.f to ./data/raw\2d\prf22\prf22.f
+Command: gfortran -O3 -g -fprofile-arcs -ftest-coverage "./data/raw\2d\prf22\prf22.f" -o "./data/raw\2d\prf22\prf22"
+Return code: 0
+Error output:
+./data/raw\2d\prf22\prf22.f:447:72:
+
+  447 |       do 10 j=1,M
+      |                                                                        1
+Warning: Fortran 2018 deleted feature: Shared DO termination label 10 at (1)
+./data/raw\2d\prf22\prf22.f:448:72:
+
+  448 |    10 AR(i,j) = NL+i+j
+      |                                                                        1
+Warning: Fortran 2018 deleted feature: DO termination statement which is not END DO or CONTINUE with label 10 at (1)
+
+--------------------------------------------------
+Command: "./data/raw\2d\prf22\prf22"
+Return code: 0
+Output:
+ ===START OF PRF22========================
+ PRF2201  -  complete
+ PRF2201  -  complete
+ PRF2201  -  complete
+ PRF2202  -  complete
+ PRF2202  -  complete
+ PRF2202  -  complete
+ PRF2203  -  complete
+ PRF2203  -  complete
+ PRF2203  -  complete
+ === END OF PRF22 ========================= 
+
+--------------------------------------------------
+Command: gcov -b "./data/raw\2d\prf22\prf22.f"
+Return code: 0
+Output:
+File 'data/raw/2d/prf22/prf22.f'
+Lines executed:86.80% of 197
+Branches executed:98.41% of 252
+Taken at least once:71.83% of 252
+Calls executed:27.94% of 68
+Creating 'prf22.f.gcov'
+
+Lines executed:86.80% of 197
+
+--------------------------------------------------
+Copied and removed ./prf22.f.gcov to ./data/raw\2d\prf22\prf22.f.gcov
+Command: "../SAPFOR/_bin/Release/Sapfor_F.exe" -parse -spf "./data/raw\2d\prf22\prf22.f"
+Return code: 0
+Output:
+SAPFOR version is 2410, build date: Apr 23 2025 11:52:44, c++ version 201703
+  parse file './data/raw\2d\prf22\prf22.f'
+  options: -spf 
+files compilation order:
+  ./data/raw\2d\prf22\prf22.f
+Parsing was completed successfully
+
+--------------------------------------------------
+Command: "../SAPFOR/_bin/Release/Sapfor_F.exe" -passN GET_STATS_FOR_PREDICTOR -keepDVM
+Return code: 0
+Output:
+SAPFOR version is 2410, build date: Apr 23 2025 11:52:44, c++ version 201703
+code for pass GET_STATS_FOR_PREDICTOR is 79
+RUN PASS with name VERIFY_FUNC_DECL
+  Analyzing: data/raw\2d\prf22\prf22.f
+PROFILE: time for this pass = 0.000000 sec (total 0.002000 sec)
+RUN PASS with name FILE_LINE_INFO
+  Analyzing: data/raw\2d\prf22\prf22.f
+  All lines in project 460
+PROFILE: time for this pass = 0.000000 sec (total 0.002000 sec)
+RUN PASS with name BUILD_INCLUDE_DEPENDENCIES
+  Analyzing: data/raw\2d\prf22\prf22.f
+PROFILE: time for this pass = 0.000000 sec (total 0.003000 sec)
+RUN PASS with name CORRECT_VAR_DECL
+  Analyzing: data/raw\2d\prf22\prf22.f
+PROFILE: time for this pass = 0.000000 sec (total 0.003000 sec)
+RUN PASS with name VERIFY_OPERATORS
+  Analyzing: data/raw\2d\prf22\prf22.f
+PROFILE: time for this pass = 0.000000 sec (total 0.003000 sec)
+RUN PASS with name VERIFY_ENDDO
+  Analyzing: data/raw\2d\prf22\prf22.f
+  ERROR: Loop on line 446 does not have END DO
+  ERROR: Loop on line 447 does not have END DO
+exception occurred
+ERROR - [#1018: data/raw\2d\prf22\prf22.f: line 446]: This loop does not have END DO format
+ERROR - [#1018: data/raw\2d\prf22\prf22.f: line 447]: This loop does not have END DO format
+
+--------------------------------------------------
+Исходный файл ./info.json не существует, копирование невозможно
+
+==================================================
+Processing of prf22.f completed successfully at 2025-05-25 22:52:17

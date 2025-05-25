@@ -1,0 +1,103 @@
+=== Processing file: prf31.f ===
+Date and time: 2025-05-25 22:53:04
+Dimension: 3d
+==================================================
+
+Copied ..\graduation_data_experiment\sources\3d\prf31.f to ./data/raw\3d\prf31\prf31.f
+Command: gfortran -O3 -g -fprofile-arcs -ftest-coverage "./data/raw\3d\prf31\prf31.f" -o "./data/raw\3d\prf31\prf31"
+Return code: 0
+Error output:
+./data/raw\3d\prf31\prf31.f:443:72:
+
+  443 |       do 10 j=1,M
+      |                                                                        1
+Warning: Fortran 2018 deleted feature: Shared DO termination label 10 at (1)
+./data/raw\3d\prf31\prf31.f:444:72:
+
+  444 |       do 10 ii=1,K
+      |                                                                        1
+Warning: Fortran 2018 deleted feature: Shared DO termination label 10 at (1)
+./data/raw\3d\prf31\prf31.f:445:72:
+
+  445 |    10 AR(i,j,ii) = NL+i+j+ii
+      |                                                                        1
+Warning: Fortran 2018 deleted feature: DO termination statement which is not END DO or CONTINUE with label 10 at (1)
+
+--------------------------------------------------
+Command: "./data/raw\3d\prf31\prf31"
+Return code: 0
+Output:
+ ===START OF PRF31========================
+ PRF3101  -  complete
+ PRF3101  -  complete
+ PRF3101  -  complete
+ PRF3102  -  complete
+ PRF3102  -  complete
+ PRF3102  -  complete
+ PRF3102  -  complete
+ PRF3102  -  complete
+ PRF3102  -  complete
+ === END OF PRF31 ========================= 
+
+--------------------------------------------------
+Command: gcov -b "./data/raw\3d\prf31\prf31.f"
+Return code: 0
+Output:
+File 'data/raw/3d/prf31/prf31.f'
+Lines executed:92.74% of 179
+Branches executed:100.00% of 224
+Taken at least once:80.80% of 224
+Calls executed:41.51% of 53
+Creating 'prf31.f.gcov'
+
+Lines executed:92.74% of 179
+
+--------------------------------------------------
+Copied and removed ./prf31.f.gcov to ./data/raw\3d\prf31\prf31.f.gcov
+Command: "../SAPFOR/_bin/Release/Sapfor_F.exe" -parse -spf "./data/raw\3d\prf31\prf31.f"
+Return code: 0
+Output:
+SAPFOR version is 2410, build date: Apr 23 2025 11:52:44, c++ version 201703
+  parse file './data/raw\3d\prf31\prf31.f'
+  options: -spf 
+files compilation order:
+  ./data/raw\3d\prf31\prf31.f
+Parsing was completed successfully
+
+--------------------------------------------------
+Command: "../SAPFOR/_bin/Release/Sapfor_F.exe" -passN GET_STATS_FOR_PREDICTOR -keepDVM
+Return code: 0
+Output:
+SAPFOR version is 2410, build date: Apr 23 2025 11:52:44, c++ version 201703
+code for pass GET_STATS_FOR_PREDICTOR is 79
+RUN PASS with name VERIFY_FUNC_DECL
+  Analyzing: data/raw\3d\prf31\prf31.f
+PROFILE: time for this pass = 0.000000 sec (total 0.001000 sec)
+RUN PASS with name FILE_LINE_INFO
+  Analyzing: data/raw\3d\prf31\prf31.f
+  All lines in project 457
+PROFILE: time for this pass = 0.000000 sec (total 0.002000 sec)
+RUN PASS with name BUILD_INCLUDE_DEPENDENCIES
+  Analyzing: data/raw\3d\prf31\prf31.f
+PROFILE: time for this pass = 0.000000 sec (total 0.002000 sec)
+RUN PASS with name CORRECT_VAR_DECL
+  Analyzing: data/raw\3d\prf31\prf31.f
+PROFILE: time for this pass = 0.000000 sec (total 0.002000 sec)
+RUN PASS with name VERIFY_OPERATORS
+  Analyzing: data/raw\3d\prf31\prf31.f
+PROFILE: time for this pass = 0.000000 sec (total 0.003000 sec)
+RUN PASS with name VERIFY_ENDDO
+  Analyzing: data/raw\3d\prf31\prf31.f
+  ERROR: Loop on line 442 does not have END DO
+  ERROR: Loop on line 443 does not have END DO
+  ERROR: Loop on line 444 does not have END DO
+exception occurred
+ERROR - [#1018: data/raw\3d\prf31\prf31.f: line 442]: This loop does not have END DO format
+ERROR - [#1018: data/raw\3d\prf31\prf31.f: line 443]: This loop does not have END DO format
+ERROR - [#1018: data/raw\3d\prf31\prf31.f: line 444]: This loop does not have END DO format
+
+--------------------------------------------------
+Исходный файл ./info.json не существует, копирование невозможно
+
+==================================================
+Processing of prf31.f completed successfully at 2025-05-25 22:53:05

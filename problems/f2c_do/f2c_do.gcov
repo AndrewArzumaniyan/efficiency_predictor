@@ -1,0 +1,1290 @@
+        -:    0:Source:data/raw/1d/f2c_do/f2c_do.f
+        -:    0:Graph:./data/raw\1d\f2c_do\f2c_do.gcno
+        -:    0:Data:./data/raw\1d\f2c_do\f2c_do.gcda
+        -:    0:Runs:1
+function MAIN__ called 1 returned 100% blocks executed 100%
+        1:    1:      program DO1
+        -:    2:
+        -:    3:c    TESTING convert statement DO  .       
+        -:    4:
+        1:    5:      print *,'===START OF F2C_DO========================'
+call    0 returned 100%
+call    1 returned 100%
+call    2 returned 100%
+        -:    6:C --------------------------------------------------
+        -:    7:c   do with enddo
+        1:    8:      call do_enddo
+call    0 returned 100%
+        -:    9:c   do with label (continue)
+        1:   10:      call do_continue
+call    0 returned 100%
+        -:   11:c   do with label (last stmt)
+        1:   12:      call do_without_end
+call    0 returned 100%
+        -:   13:c   check iterator value after DO
+        1:   14:      call do_value_iter
+call    0 returned 100%
+        -:   15:c   check iterator value in same step (+3)
+        1:   16:      call do_with_same_step1
+call    0 returned 100%
+        -:   17:c   check iterator value in same step (-2)
+        1:   18:      call do_with_same_step2
+call    0 returned 100%
+        -:   19:c   multi do
+        1:   20:      call do_multi
+call    0 returned 100%
+        -:   21:c   cycle stmt
+        1:   22:      call do_cycle_stmt_1
+call    0 returned 100%
+        1:   23:      call do_cycle_stmt_2
+call    0 returned 100%
+        -:   24:c   exit stmt
+        1:   25:      call do_exit_stmt
+call    0 returned 100%
+        -:   26:c   do while with var-expr
+        1:   27:      call do_while_true
+call    0 returned 100%
+        -:   28:c   do while const-expr
+        1:   29:      call do_while_expr
+call    0 returned 100%
+        -:   30:    
+        -:   31:
+        1:   32:      print *,'=== END OF F2C_DO ========================= '    
+call    0 returned 100%
+call    1 returned 100%
+call    2 returned 100%
+function main called 1 returned 100% blocks executed 100%
+        1:   33:      end
+call    0 returned 100%
+call    1 returned 100%
+call    2 returned 100%
+        -:   34:
+        -:   35:C ----------------------------------------------------do1
+function do_enddo_ called 1 returned 100% blocks executed 86%
+        1:   36:      subroutine do_enddo
+        -:   37:      integer, parameter :: AN1=256, ER=10000    
+        -:   38:      character*18 tname
+        1:   39:      integer, allocatable :: A1(:)
+        1:   40:      integer, allocatable :: B1(:)
+        -:   41:      integer erri,i, ia
+        -:   42:!dvm$ distribute A1(BLOCK)
+        1:   43:      tname='do_enddo'
+        -:   44:	  
+        -:   45:	  
+        -:   46:    
+       1*:   47:      allocate (A1(AN1))
+branch  0 taken 0% (fallthrough)
+branch  1 taken 100%
+call    2 never executed
+       1*:   48:      allocate (B1(AN1))
+branch  0 taken 100% (fallthrough)
+branch  1 taken 0%
+call    2 never executed
+        -:   49:      
+      257:   50:      erri= ER
+      257:   51:      do i=1,AN1
+branch  0 taken 1% (fallthrough)
+branch  1 taken 100%
+      257:   52:            B1(i) =i     
+        -:   53:      enddo
+        -:   54:
+        -:   55:!dvm$ region
+        -:   56:!dvm$ parallel (i) on A1(i)
+      257:   57:      do i=1,AN1
+branch  0 taken 1% (fallthrough)
+branch  1 taken 100%
+      257:   58:            A1(i) =i     
+        -:   59:      enddo
+        -:   60:
+        -:   61:!dvm$ parallel (i) on A1(i)
+        -:   62:!dvm$*, private(ia)
+      257:   63:      do i=1, AN1
+branch  0 taken 100% (fallthrough)
+branch  1 taken 1%
+    33153:   64:            do ia = 1, i
+branch  0 taken 99% (fallthrough)
+branch  1 taken 1%
+    33152:   65:                 A1(i) = A1(i) + ia + (i-5)
+        -:   66:            enddo
+        -:   67:      enddo
+        -:   68:      
+        -:   69:!dvm$ end region   
+      257:   70:      do i=1, AN1
+branch  0 taken 100% (fallthrough)
+branch  1 taken 1%
+    33153:   71:            do ia = 1, i
+branch  0 taken 99% (fallthrough)
+branch  1 taken 1%
+    33152:   72:                B1(i) = B1(i) + ia + (i-5)
+        -:   73:            enddo
+        -:   74:      enddo
+        -:   75:      erri= ER
+        -:   76:     
+        -:   77:
+        -:   78:!dvm$ get_actual(A1)
+        -:   79:!dvm$ parallel (i) on A1(i), reduction( min( erri ) )
+      257:   80:      do i=1,AN1
+branch  0 taken 100% (fallthrough)
+branch  1 taken 1%
+      257:   81:            if ( abs(A1(i) - B1(i) ) .lt. 0.001 ) then         
+branch  0 taken 0% (fallthrough)
+branch  1 taken 100%
+        -:   82:            else
+    #####:   83:               erri = min(erri,i)
+        -:   84:            endif     
+        -:   85:      enddo
+        -:   86:      
+        -:   87:
+        -:   88:     
+        1:   89:      if (erri .eq.ER) then     
+branch  0 taken 100% (fallthrough)
+branch  1 taken 0%
+        1:   90:          call ansyes(tname)
+call    0 returned 100%
+        -:   91:      else
+    #####:   92:          call ansno(tname)
+call    0 never executed
+        -:   93:      endif 
+       1*:   94:	  deallocate (A1)
+branch  0 taken 0% (fallthrough)
+branch  1 taken 100%
+call    2 never executed
+       1*:   95:	  deallocate (B1)
+branch  0 taken 0% (fallthrough)
+branch  1 taken 100%
+call    2 never executed
+        -:   96:
+        -:   97:
+        1:   98:      end
+        -:   99:C ----------------------------------------------------do12
+function do_continue_ called 1 returned 100% blocks executed 88%
+        1:  100:      subroutine do_continue
+        -:  101:      integer, parameter :: AN1=256, ER=10000    
+        -:  102:      character*18 tname
+        1:  103:      integer, allocatable :: A1(:)
+        1:  104:      integer, allocatable :: B1(:)
+        -:  105:      integer erri,i, ia
+        -:  106:!dvm$ distribute A1(BLOCK)
+        1:  107:      tname='do_continue'
+        -:  108:	  
+        -:  109:	  
+        -:  110:    
+       1*:  111:      allocate (A1(AN1))
+branch  0 taken 0% (fallthrough)
+branch  1 taken 100%
+call    2 never executed
+       1*:  112:      allocate (B1(AN1))
+branch  0 taken 100% (fallthrough)
+branch  1 taken 0%
+call    2 never executed
+      257:  113:      erri= ER
+      257:  114:      do i=1,AN1
+branch  0 taken 1% (fallthrough)
+branch  1 taken 100%
+      257:  115:            B1(i) =i     
+        -:  116:      enddo
+        -:  117:
+        -:  118:!dvm$ region
+        -:  119:!dvm$ parallel (i) on A1(i)
+      257:  120:      do i=1,AN1
+branch  0 taken 1% (fallthrough)
+branch  1 taken 100%
+      257:  121:            A1(i) =i     
+        -:  122:      enddo
+        -:  123:
+        -:  124:!dvm$ parallel (i) on A1(i)
+        -:  125:!dvm$*, private(ia)
+      257:  126:      do i=1, AN1
+branch  0 taken 100% (fallthrough)
+branch  1 taken 1%
+    33153:  127:            do 101, ia = 1, i
+branch  0 taken 99% (fallthrough)
+branch  1 taken 1%
+    32896:  128:                 A1(i) = A1(i) + ia + (i-5)
+      256:  129:101          continue
+        -:  130:      enddo
+        -:  131:      
+        -:  132:!dvm$ end region   
+      257:  133:      do i=1, AN1
+branch  0 taken 100% (fallthrough)
+branch  1 taken 1%
+    33153:  134:            do 201, ia = 1, i
+branch  0 taken 99% (fallthrough)
+branch  1 taken 1%
+    32896:  135:                B1(i) = B1(i) + ia + (i-5)
+      256:  136:201          continue
+        -:  137:      enddo
+        -:  138:      erri= ER
+        -:  139:!dvm$ get_actual(A1)
+        -:  140:!dvm$ parallel (i) on A1(i), reduction( min( erri ) )
+        -:  141:      do i=1,AN1
+        -:  142:            if ( abs(A1(i) - B1(i) ) .lt. 0.001 ) then         
+        -:  143:            else
+        -:  144:               erri = min(erri,i)
+        -:  145:            endif     
+        -:  146:      enddo
+        -:  147:      
+        -:  148:
+        1:  149:      erri= ER
+        -:  150:      if (erri .eq.ER) then     
+        1:  151:          call ansyes(tname)
+call    0 returned 100%
+        -:  152:      else
+        -:  153:          call ansno(tname)
+        -:  154:      endif 
+       1*:  155:	  deallocate (A1)
+branch  0 taken 0% (fallthrough)
+branch  1 taken 100%
+call    2 never executed
+       1*:  156:	  deallocate (B1)
+branch  0 taken 0% (fallthrough)
+branch  1 taken 100%
+call    2 never executed
+        -:  157:
+        -:  158:
+        1:  159:      end
+        -:  160:
+        -:  161:C ----------------------------------------------------do13
+function do_without_end_ called 1 returned 100% blocks executed 86%
+        1:  162:      subroutine do_without_end
+        -:  163:      integer, parameter :: AN1=256, ER=10000    
+        -:  164:      character*18 tname
+        1:  165:      integer, allocatable :: A1(:)
+        1:  166:      integer, allocatable :: B1(:)
+        -:  167:      integer erri,i, ia
+        -:  168:!dvm$ distribute A1(BLOCK)
+        1:  169:      tname='do_without_end'
+        -:  170:	  
+        -:  171:	  
+        -:  172:    
+       1*:  173:      allocate (A1(AN1))
+branch  0 taken 0% (fallthrough)
+branch  1 taken 100%
+call    2 never executed
+       1*:  174:      allocate (B1(AN1))
+branch  0 taken 100% (fallthrough)
+branch  1 taken 0%
+call    2 never executed
+      257:  175:      erri= ER
+      257:  176:      do i=1,AN1
+branch  0 taken 1% (fallthrough)
+branch  1 taken 100%
+      257:  177:            B1(i) =i     
+        -:  178:      enddo
+        -:  179:
+        -:  180:!dvm$ region
+        -:  181:!dvm$ parallel (i) on A1(i)
+      257:  182:      do i=1,AN1
+branch  0 taken 1% (fallthrough)
+branch  1 taken 100%
+      257:  183:            A1(i) =i     
+        -:  184:      enddo
+        -:  185:
+        -:  186:!dvm$ parallel (i) on A1(i)
+        -:  187:!dvm$*, private(ia)
+      257:  188:      do i=1, AN1
+branch  0 taken 100% (fallthrough)
+branch  1 taken 1%
+    33153:  189:            do 102, ia = 1, i
+branch  0 taken 99% (fallthrough)
+branch  1 taken 1%
+    33152:  190:102            A1(i) = A1(i) + ia + (i-5)
+        -:  191:         
+        -:  192:      enddo
+        -:  193:      
+        -:  194:!dvm$ end region   
+      257:  195:      do i=1, AN1
+branch  0 taken 100% (fallthrough)
+branch  1 taken 1%
+    33153:  196:            do 202, ia = 1, i
+branch  0 taken 99% (fallthrough)
+branch  1 taken 1%
+    33152:  197:202             B1(i) = B1(i) + ia + (i-5)
+        -:  198:          
+        -:  199:      enddo
+        -:  200:      erri= ER
+        -:  201:!dvm$ get_actual(A1)
+        -:  202:!dvm$ parallel (i) on A1(i), reduction( min( erri ) )
+      257:  203:      do i=1,AN1
+branch  0 taken 100% (fallthrough)
+branch  1 taken 1%
+      257:  204:            if ( abs(A1(i) - B1(i) ) .lt. 0.001 ) then         
+branch  0 taken 0% (fallthrough)
+branch  1 taken 100%
+        -:  205:            else
+    #####:  206:               erri = min(erri,i)
+        -:  207:            endif     
+        -:  208:      enddo
+        -:  209:      
+        -:  210:
+        -:  211:     
+        1:  212:      if (erri .eq.ER) then     
+branch  0 taken 100% (fallthrough)
+branch  1 taken 0%
+        1:  213:          call ansyes(tname)
+call    0 returned 100%
+        -:  214:      else
+    #####:  215:          call ansno(tname)
+call    0 never executed
+        -:  216:      endif 
+       1*:  217:	  deallocate (A1)
+branch  0 taken 0% (fallthrough)
+branch  1 taken 100%
+call    2 never executed
+       1*:  218:	  deallocate (B1)
+branch  0 taken 0% (fallthrough)
+branch  1 taken 100%
+call    2 never executed
+        -:  219:
+        -:  220:
+        1:  221:      end
+        -:  222:
+        -:  223:
+        -:  224:C ----------------------------------------------------do14
+function do_value_iter_ called 1 returned 100% blocks executed 86%
+        1:  225:      subroutine do_value_iter
+        -:  226:      integer, parameter :: AN1=256, ER=10000    
+        -:  227:      character*18 tname
+        1:  228:      integer, allocatable :: A1(:)
+        1:  229:      integer, allocatable :: B1(:)
+        -:  230:      integer erri,i, ia
+        -:  231:!dvm$ distribute A1(BLOCK)
+        1:  232:      tname='do_value_iter'
+        -:  233:	  
+        -:  234:	  
+        -:  235:    
+       1*:  236:      allocate (A1(AN1))
+branch  0 taken 0% (fallthrough)
+branch  1 taken 100%
+call    2 never executed
+       1*:  237:      allocate (B1(AN1))
+branch  0 taken 100% (fallthrough)
+branch  1 taken 0%
+call    2 never executed
+      257:  238:      erri= ER
+      257:  239:      do i=1,AN1
+branch  0 taken 1% (fallthrough)
+branch  1 taken 100%
+      257:  240:            B1(i) =i     
+        -:  241:      enddo
+        -:  242:
+        -:  243:!dvm$ region
+        -:  244:!dvm$ parallel (i) on A1(i)
+      257:  245:      do i=1,AN1
+branch  0 taken 1% (fallthrough)
+branch  1 taken 100%
+      257:  246:            A1(i) =i     
+        -:  247:      enddo
+        -:  248:
+        -:  249:
+        -:  250:!dvm$ parallel (i) on A1(i)
+        -:  251:!dvm$*, private(ia)
+      257:  252:      do i=1, AN1
+branch  0 taken 1% (fallthrough)
+branch  1 taken 100%
+    64772:  253:            do ia = 1, i*2-5
+branch  0 taken 100% (fallthrough)
+branch  1 taken 1%
+    64772:  254:                 A1(i) = A1(i) + ia + (i-5)
+        -:  255:            enddo
+      257:  256:            A1(i) = ia
+        -:  257:            
+        -:  258:      enddo
+        -:  259:      
+        -:  260:!dvm$ end region   
+      257:  261:      do i=1, AN1
+branch  0 taken 1% (fallthrough)
+branch  1 taken 100%
+    64772:  262:            do ia = 1, i*2-5
+branch  0 taken 100% (fallthrough)
+branch  1 taken 1%
+    64772:  263:                B1(i) = B1(i) + ia + (i-5)
+        -:  264:            enddo
+      257:  265:            B1(i) = ia
+        -:  266:      enddo
+        -:  267:      erri= ER
+        -:  268:!dvm$ get_actual(A1)
+        -:  269:!dvm$ parallel (i) on A1(i), reduction( min( erri ) )
+      257:  270:      do i=1,AN1
+branch  0 taken 100% (fallthrough)
+branch  1 taken 1%
+      257:  271:            if ( abs(A1(i) - B1(i) ) .lt. 0.001 ) then         
+branch  0 taken 0% (fallthrough)
+branch  1 taken 100%
+        -:  272:            else
+    #####:  273:               erri = min(erri,i)
+        -:  274:            endif     
+        -:  275:      enddo
+        -:  276:      
+        -:  277:
+        -:  278:     
+        1:  279:      if (erri .eq.ER) then     
+branch  0 taken 100% (fallthrough)
+branch  1 taken 0%
+        1:  280:          call ansyes(tname)
+call    0 returned 100%
+        -:  281:      else
+    #####:  282:          call ansno(tname)
+call    0 never executed
+        -:  283:      endif 
+       1*:  284:	  deallocate (A1)
+branch  0 taken 0% (fallthrough)
+branch  1 taken 100%
+call    2 never executed
+       1*:  285:	  deallocate (B1)
+branch  0 taken 0% (fallthrough)
+branch  1 taken 100%
+call    2 never executed
+        -:  286:
+        -:  287:
+        1:  288:      end
+        -:  289:
+        -:  290:C ----------------------------------------------------do15
+function do_with_same_step1_ called 1 returned 100% blocks executed 87%
+        1:  291:      subroutine do_with_same_step1
+        -:  292:      integer, parameter :: AN1=256, ER=10000    
+        -:  293:      character*18 tname
+        1:  294:      integer, allocatable :: A1(:)
+        1:  295:      integer, allocatable :: B1(:)
+        -:  296:      integer erri,i, ia
+        -:  297:!dvm$ distribute A1(BLOCK)
+        1:  298:      tname='do_with_same_step1'
+        -:  299:	  
+        -:  300:	  
+        -:  301:    
+       1*:  302:      allocate (A1(AN1))
+branch  0 taken 0% (fallthrough)
+branch  1 taken 100%
+call    2 never executed
+       1*:  303:      allocate (B1(AN1))
+branch  0 taken 100% (fallthrough)
+branch  1 taken 0%
+call    2 never executed
+      257:  304:      erri= ER
+      257:  305:      do i=1,AN1
+branch  0 taken 1% (fallthrough)
+branch  1 taken 100%
+      257:  306:            B1(i) =i     
+        -:  307:      enddo
+        -:  308:
+        -:  309:!dvm$ region
+        -:  310:!dvm$ parallel (i) on A1(i)
+      257:  311:      do i=1,AN1
+branch  0 taken 1% (fallthrough)
+branch  1 taken 100%
+      257:  312:            A1(i) =i     
+        -:  313:      enddo
+        -:  314:
+        -:  315:
+        -:  316:!dvm$ parallel (i) on A1(i)
+        -:  317:!dvm$*, private(ia)
+      257:  318:      do i=1, AN1
+branch  0 taken 1% (fallthrough)
+branch  1 taken 100%
+      257:  319:            do ia = 1, i*2-5, 3
+branch  0 taken 99% (fallthrough)
+branch  1 taken 1%
+    21592:  320:                 A1(i) = A1(i) + ia + (i-5)
+branch  0 taken 1% (fallthrough)
+branch  1 taken 99%
+        -:  321:            enddo
+        -:  322:            
+        -:  323:      enddo
+        -:  324:      
+        -:  325:!dvm$ end region   
+      257:  326:      do i=1, AN1
+branch  0 taken 1% (fallthrough)
+branch  1 taken 100%
+      257:  327:            do ia = 1, i*2-5, 3
+branch  0 taken 99% (fallthrough)
+branch  1 taken 1%
+    21592:  328:                B1(i) = B1(i) + ia + (i-5)
+branch  0 taken 1% (fallthrough)
+branch  1 taken 99%
+        -:  329:            enddo
+        -:  330:      enddo
+        -:  331:      erri= ER
+        -:  332:!dvm$ get_actual(A1)
+        -:  333:!dvm$ parallel (i) on A1(i), reduction( min( erri ) )
+      257:  334:      do i=1,AN1
+branch  0 taken 100% (fallthrough)
+branch  1 taken 1%
+      257:  335:            if ( abs(A1(i) - B1(i) ) .lt. 0.001 ) then         
+branch  0 taken 0% (fallthrough)
+branch  1 taken 100%
+        -:  336:            else
+    #####:  337:               erri = min(erri,i)
+        -:  338:            endif     
+        -:  339:      enddo
+        -:  340:      
+        -:  341:
+        -:  342:     
+        1:  343:      if (erri .eq.ER) then     
+branch  0 taken 100% (fallthrough)
+branch  1 taken 0%
+        1:  344:          call ansyes(tname)
+call    0 returned 100%
+        -:  345:      else
+    #####:  346:          call ansno(tname)
+call    0 never executed
+        -:  347:      endif 
+       1*:  348:	  deallocate (A1)
+branch  0 taken 0% (fallthrough)
+branch  1 taken 100%
+call    2 never executed
+       1*:  349:	  deallocate (B1)
+branch  0 taken 0% (fallthrough)
+branch  1 taken 100%
+call    2 never executed
+        -:  350:
+        -:  351:
+        1:  352:      end
+        -:  353:C ----------------------------------------------------do16
+function do_with_same_step2_ called 1 returned 100% blocks executed 87%
+        1:  354:      subroutine do_with_same_step2
+        -:  355:      integer, parameter :: AN1=256, ER=10000    
+        -:  356:      character*18 tname
+        1:  357:      integer, allocatable :: A1(:)
+        1:  358:      integer, allocatable :: B1(:)
+        -:  359:      integer erri,i, ia
+        -:  360:!dvm$ distribute A1(BLOCK)
+        1:  361:      tname='do_with_same_step2'
+        -:  362:	  
+        -:  363:	  
+        -:  364:    
+       1*:  365:      allocate (A1(AN1))
+branch  0 taken 0% (fallthrough)
+branch  1 taken 100%
+call    2 never executed
+       1*:  366:      allocate (B1(AN1))
+branch  0 taken 100% (fallthrough)
+branch  1 taken 0%
+call    2 never executed
+      257:  367:      erri= ER
+      257:  368:      do i=1,AN1
+branch  0 taken 1% (fallthrough)
+branch  1 taken 100%
+      257:  369:            B1(i) =i     
+        -:  370:      enddo
+        -:  371:
+        -:  372:!dvm$ region
+        -:  373:!dvm$ parallel (i) on A1(i)
+      257:  374:      do i=1,AN1
+branch  0 taken 1% (fallthrough)
+branch  1 taken 100%
+      257:  375:            A1(i) =i     
+        -:  376:      enddo
+        -:  377:
+        -:  378:
+        -:  379:!dvm$ parallel (i) on A1(i)
+        -:  380:!dvm$*, private(ia)
+      257:  381:      do i=1, AN1
+branch  0 taken 1% (fallthrough)
+branch  1 taken 100%
+      257:  382:            do ia = i*2-5, 1, -2
+branch  0 taken 99% (fallthrough)
+branch  1 taken 1%
+    32387:  383:                 A1(i) = A1(i) + ia + (i-5)
+branch  0 taken 1% (fallthrough)
+branch  1 taken 99%
+        -:  384:            enddo
+        -:  385:            
+        -:  386:      enddo
+        -:  387:      
+        -:  388:!dvm$ end region   
+      257:  389:      do i=1, AN1
+branch  0 taken 1% (fallthrough)
+branch  1 taken 100%
+      257:  390:            do ia = i*2-5, 1, -2
+branch  0 taken 99% (fallthrough)
+branch  1 taken 1%
+    32387:  391:                B1(i) = B1(i) + ia + (i-5)
+branch  0 taken 1% (fallthrough)
+branch  1 taken 99%
+        -:  392:            enddo
+        -:  393:      enddo
+        -:  394:      erri= ER
+        -:  395:!dvm$ get_actual(A1)
+        -:  396:!dvm$ parallel (i) on A1(i), reduction( min( erri ) )
+      257:  397:      do i=1,AN1
+branch  0 taken 100% (fallthrough)
+branch  1 taken 1%
+      257:  398:            if ( abs(A1(i) - B1(i) ) .lt. 0.001 ) then         
+branch  0 taken 0% (fallthrough)
+branch  1 taken 100%
+        -:  399:            else
+    #####:  400:               erri = min(erri,i)
+        -:  401:            endif     
+        -:  402:      enddo
+        -:  403:      
+        -:  404:
+        -:  405:     
+        1:  406:      if (erri .eq.ER) then     
+branch  0 taken 100% (fallthrough)
+branch  1 taken 0%
+        1:  407:          call ansyes(tname)
+call    0 returned 100%
+        -:  408:      else
+    #####:  409:          call ansno(tname)
+call    0 never executed
+        -:  410:      endif 
+       1*:  411:	  deallocate (A1)
+branch  0 taken 0% (fallthrough)
+branch  1 taken 100%
+call    2 never executed
+       1*:  412:	  deallocate (B1)
+branch  0 taken 0% (fallthrough)
+branch  1 taken 100%
+call    2 never executed
+        -:  413:
+        -:  414:
+        1:  415:      end
+        -:  416:C ----------------------------------------------------do17
+function do_multi_ called 1 returned 100% blocks executed 88%
+        1:  417:      subroutine do_multi
+        -:  418:      integer, parameter :: AN1=256, ER=10000    
+        -:  419:      character*18 tname
+        1:  420:      integer, allocatable :: A1(:)
+        1:  421:      integer, allocatable :: B1(:)
+        -:  422:      integer erri,i, ia
+        -:  423:!dvm$ distribute A1(BLOCK)
+        1:  424:      tname='do_multi'
+        -:  425:	  
+        -:  426:	  
+        -:  427:    
+       1*:  428:      allocate (A1(AN1))
+branch  0 taken 0% (fallthrough)
+branch  1 taken 100%
+call    2 never executed
+       1*:  429:      allocate (B1(AN1))
+branch  0 taken 100% (fallthrough)
+branch  1 taken 0%
+call    2 never executed
+      257:  430:      erri= ER
+      257:  431:      do i=1,AN1
+branch  0 taken 1% (fallthrough)
+branch  1 taken 100%
+      257:  432:            B1(i) =i     
+        -:  433:      enddo
+        -:  434:
+        -:  435:!dvm$ region
+        -:  436:!dvm$ parallel (i) on A1(i)
+      257:  437:      do i=1,AN1
+branch  0 taken 1% (fallthrough)
+branch  1 taken 100%
+      257:  438:            A1(i) =i     
+        -:  439:      enddo
+        -:  440:
+        -:  441:
+        -:  442:!dvm$ parallel (i) on A1(i)
+        -:  443:!dvm$*, private(ia,j,n)
+      257:  444:      do i=1, AN1
+branch  0 taken 1% (fallthrough)
+branch  1 taken 100%
+      256:  445:        n = 0
+    33152:  446:        do 107, ia = 1, A1(i)
+branch  0 taken 99% (fallthrough)
+branch  1 taken 1%
+  2862208:  447:            do 107, j = ia, A1(i)
+branch  0 taken 99% (fallthrough)
+branch  1 taken 1%
+  2861952:  448:107             n = n+1         
+      257:  449:        A1(i) = n + j - 2*ia
+        -:  450:      enddo
+        -:  451:!dvm$ end region
+        -:  452:
+      257:  453:      do i=1, AN1
+branch  0 taken 1% (fallthrough)
+branch  1 taken 100%
+      256:  454:        n = 0
+    33152:  455:        do 207, ia = 1, B1(i)
+branch  0 taken 99% (fallthrough)
+branch  1 taken 1%
+  2862208:  456:            do 207, j = ia, B1(i)
+branch  0 taken 99% (fallthrough)
+branch  1 taken 1%
+  2861952:  457:207             n = n+1         
+      257:  458:        B1(i) = n + j - 2*ia
+        -:  459:      enddo
+        -:  460:
+        -:  461:      erri= ER
+        -:  462:!dvm$ get_actual(A1)
+        -:  463:!dvm$ parallel (i) on A1(i), reduction( min( erri ) )
+      257:  464:      do i=1,AN1
+branch  0 taken 100% (fallthrough)
+branch  1 taken 1%
+      257:  465:            if ( abs(A1(i) - B1(i) ) .lt. 0.001 ) then         
+branch  0 taken 0% (fallthrough)
+branch  1 taken 100%
+        -:  466:            else
+    #####:  467:               erri = min(erri,i)
+        -:  468:            endif     
+        -:  469:      enddo   
+        -:  470:
+        -:  471:     
+        1:  472:      if (erri .eq.ER) then     
+branch  0 taken 100% (fallthrough)
+branch  1 taken 0%
+        1:  473:          call ansyes(tname)
+call    0 returned 100%
+        -:  474:      else
+    #####:  475:          call ansno(tname)
+call    0 never executed
+        -:  476:      endif 
+       1*:  477:	  deallocate (A1)
+branch  0 taken 0% (fallthrough)
+branch  1 taken 100%
+call    2 never executed
+       1*:  478:	  deallocate (B1)
+branch  0 taken 0% (fallthrough)
+branch  1 taken 100%
+call    2 never executed
+        -:  479:
+        1:  480:      end
+        -:  481:C ----------------------------------------------------do18
+function do_cycle_stmt_1_ called 1 returned 100% blocks executed 88%
+        1:  482:      subroutine do_cycle_stmt_1
+        -:  483:      integer, parameter :: AN1=256, ER=10000    
+        -:  484:      character*18 tname
+        1:  485:      integer, allocatable :: A1(:)
+        1:  486:      integer, allocatable :: B1(:)
+        -:  487:      integer erri,i, ia
+        -:  488:!dvm$ distribute A1(BLOCK)
+        1:  489:      tname='do_cycle_stmt_1'
+        -:  490:	  
+        -:  491:	  
+        -:  492:    
+       1*:  493:      allocate (A1(AN1))
+branch  0 taken 0% (fallthrough)
+branch  1 taken 100%
+call    2 never executed
+       1*:  494:      allocate (B1(AN1))
+branch  0 taken 100% (fallthrough)
+branch  1 taken 0%
+call    2 never executed
+      257:  495:      erri= ER
+      257:  496:      do i=1,AN1
+branch  0 taken 1% (fallthrough)
+branch  1 taken 100%
+      257:  497:            B1(i) =i     
+        -:  498:      enddo
+        -:  499:
+        -:  500:!dvm$ region
+        -:  501:!dvm$ parallel (i) on A1(i)
+      257:  502:      do i=1,AN1
+branch  0 taken 1% (fallthrough)
+branch  1 taken 100%
+      257:  503:            A1(i) =i     
+        -:  504:      enddo
+        -:  505:
+        -:  506:!dvm$ parallel (i) on A1(i)
+        -:  507:!dvm$*, private(ia)
+      257:  508:      do i=1, AN1
+branch  0 taken 1% (fallthrough)
+branch  1 taken 100%
+    32642:  509:            do ia = 1, i*2-5, 2
+branch  0 taken 99% (fallthrough)
+branch  1 taken 1%
+branch  2 taken 1% (fallthrough)
+branch  3 taken 99%
+    32385:  510:                 if(mod(A1(i),2) .eq.0) cycle
+branch  0 taken 100% (fallthrough)
+branch  1 taken 1%
+    32641:  511:                 A1(i) = A1(i) + ia  + (i-5)
+        -:  512:            enddo            
+        -:  513:      enddo
+        -:  514:      
+        -:  515:!dvm$ end region   
+      257:  516:      do i=1, AN1
+branch  0 taken 1% (fallthrough)
+branch  1 taken 100%
+    32642:  517:            do ia = 1, i*2-5, 2
+branch  0 taken 99% (fallthrough)
+branch  1 taken 1%
+branch  2 taken 1% (fallthrough)
+branch  3 taken 99%
+    32385:  518:                if(mod(B1(i),2) .eq.0) cycle
+branch  0 taken 100% (fallthrough)
+branch  1 taken 1%
+    32641:  519:                B1(i) = B1(i) + ia + (i-5)
+        -:  520:            enddo
+        -:  521:      enddo
+        -:  522:      erri= ER
+        -:  523:!dvm$ get_actual(A1)
+        -:  524:!dvm$ parallel (i) on A1(i), reduction( min( erri ) )
+      257:  525:      do i=1,AN1
+branch  0 taken 100% (fallthrough)
+branch  1 taken 1%
+      257:  526:            if ( abs(A1(i) - B1(i) ) .lt. 0.001 ) then         
+branch  0 taken 0% (fallthrough)
+branch  1 taken 100%
+        -:  527:            else
+    #####:  528:               erri = min(erri,i)
+        -:  529:            endif     
+        -:  530:      enddo
+        -:  531:      
+        -:  532:     
+        1:  533:      if (erri .eq.ER) then     
+branch  0 taken 100% (fallthrough)
+branch  1 taken 0%
+        1:  534:          call ansyes(tname)
+call    0 returned 100%
+        -:  535:      else
+    #####:  536:          call ansno(tname)
+call    0 never executed
+        -:  537:      endif 
+       1*:  538:	  deallocate (A1)
+branch  0 taken 0% (fallthrough)
+branch  1 taken 100%
+call    2 never executed
+       1*:  539:	  deallocate (B1)
+branch  0 taken 0% (fallthrough)
+branch  1 taken 100%
+call    2 never executed
+        -:  540:
+        -:  541:
+        1:  542:      end
+        -:  543:C ----------------------------------------------------do19
+function do_cycle_stmt_2_ called 1 returned 100% blocks executed 83%
+        1:  544:      subroutine do_cycle_stmt_2
+        -:  545:      integer, parameter :: AN1=256, ER=10000    
+        -:  546:      character*18 tname
+        1:  547:      integer, allocatable :: A1(:)
+        1:  548:      integer, allocatable :: B1(:)
+        -:  549:      integer erri,i, ia
+        -:  550:!dvm$ distribute A1(BLOCK)
+        1:  551:      tname='do_cycle_stmt_2'
+        -:  552:	  
+        -:  553:	  
+        -:  554:    
+       1*:  555:      allocate (A1(AN1))
+branch  0 taken 0% (fallthrough)
+branch  1 taken 100%
+call    2 never executed
+       1*:  556:      allocate (B1(AN1))
+branch  0 taken 100% (fallthrough)
+branch  1 taken 0%
+call    2 never executed
+      257:  557:      erri= ER
+      257:  558:      do i=1,AN1
+branch  0 taken 1% (fallthrough)
+branch  1 taken 100%
+      257:  559:            B1(i) =i     
+        -:  560:      enddo
+        -:  561:
+        -:  562:!dvm$ region
+        -:  563:!dvm$ parallel (i) on A1(i)
+      257:  564:      do i=1,AN1
+branch  0 taken 1% (fallthrough)
+branch  1 taken 100%
+      257:  565:            A1(i) =i     
+        -:  566:      enddo
+        -:  567:
+        -:  568:!dvm$ parallel (i) on A1(i)
+        -:  569:!dvm$*, private(ia)
+      257:  570:      do i=1, AN1
+branch  0 taken 1% (fallthrough)
+branch  1 taken 100%
+      256:  571:            if(A1(i) .gt. 5)  cycle
+branch  0 taken 2% (fallthrough)
+branch  1 taken 98%
+       6*:  572:            do ia = 1, i-200
+branch  0 taken 100% (fallthrough)
+branch  1 taken 0%
+     256*:  573:                 A1(i) = A1(i)+ia+(i-5)
+        -:  574:            enddo            
+        -:  575:      enddo      
+        -:  576:!dvm$ end region   
+      257:  577:      do i=1, AN1
+branch  0 taken 1% (fallthrough)
+branch  1 taken 100%
+      256:  578:            if(B1(i) .gt. 5)  cycle
+branch  0 taken 2% (fallthrough)
+branch  1 taken 98%
+       6*:  579:            do ia = 1, i-200
+branch  0 taken 100% (fallthrough)
+branch  1 taken 0%
+     256*:  580:                 B1(i) = B1(i)+ia+(i-5)
+        -:  581:            enddo
+        -:  582:      enddo
+        -:  583:      erri= ER
+        -:  584:!dvm$ get_actual(A1)
+        -:  585:!dvm$ parallel (i) on A1(i), reduction( min( erri ) )
+      257:  586:      do i=1,AN1
+branch  0 taken 100% (fallthrough)
+branch  1 taken 1%
+      257:  587:            if ( abs(A1(i) - B1(i) ) .lt. 0.001 ) then         
+branch  0 taken 0% (fallthrough)
+branch  1 taken 100%
+        -:  588:            else
+    #####:  589:               erri = min(erri,i)
+        -:  590:            endif     
+        -:  591:      enddo
+        -:  592:      
+        -:  593:     
+        1:  594:      if (erri .eq.ER) then     
+branch  0 taken 100% (fallthrough)
+branch  1 taken 0%
+        1:  595:          call ansyes(tname)
+call    0 returned 100%
+        -:  596:      else
+    #####:  597:          call ansno(tname)
+call    0 never executed
+        -:  598:      endif 
+       1*:  599:	  deallocate (A1)
+branch  0 taken 0% (fallthrough)
+branch  1 taken 100%
+call    2 never executed
+       1*:  600:	  deallocate (B1)
+branch  0 taken 0% (fallthrough)
+branch  1 taken 100%
+call    2 never executed
+        -:  601:
+        -:  602:
+        1:  603:      end
+        -:  604:
+        -:  605:C ----------------------------------------------------do20
+function do_exit_stmt_ called 1 returned 100% blocks executed 88%
+        1:  606:      subroutine do_exit_stmt
+        -:  607:      integer, parameter :: AN1=256, ER=10000    
+        -:  608:      character*18 tname
+        1:  609:      integer, allocatable :: A1(:)
+        1:  610:      integer, allocatable :: B1(:)
+        -:  611:      integer erri,i, ia
+        -:  612:!dvm$ distribute A1(BLOCK)
+        1:  613:      tname='do_exit_stmt'
+        -:  614:	  
+        -:  615:	  
+        -:  616:    
+       1*:  617:      allocate (A1(AN1))
+branch  0 taken 0% (fallthrough)
+branch  1 taken 100%
+call    2 never executed
+       1*:  618:      allocate (B1(AN1))
+branch  0 taken 100% (fallthrough)
+branch  1 taken 0%
+call    2 never executed
+      257:  619:      erri= ER
+      257:  620:      do i=1,AN1
+branch  0 taken 1% (fallthrough)
+branch  1 taken 100%
+      257:  621:            B1(i) =i     
+        -:  622:      enddo
+        -:  623:
+        -:  624:!dvm$ region
+        -:  625:!dvm$ parallel (i) on A1(i)
+      257:  626:      do i=1,AN1
+branch  0 taken 1% (fallthrough)
+branch  1 taken 100%
+      257:  627:            A1(i) =i     
+        -:  628:      enddo
+        -:  629:
+        -:  630:
+        -:  631:
+        -:  632:!dvm$ parallel (i) on A1(i)
+        -:  633:!dvm$*, private(ia,j,n)
+      257:  634:      do i=1, AN1
+branch  0 taken 1% (fallthrough)
+branch  1 taken 100%
+      256:  635:        n = 0
+    33152:  636:        do ia = 1, A1(i)
+branch  0 taken 99% (fallthrough)
+branch  1 taken 1%
+        -:  637:            j = 1
+      256:  638:            do
+  2861952:  639:                n = n+1
+  2861952:  640:                if(j .gt. ia) then 
+branch  0 taken 1% (fallthrough)
+branch  1 taken 99%
+    32896:  641:                    n = n-1
+        -:  642:                    exit
+        -:  643:                endif
+  2829056:  644:                j = j+1
+        -:  645:            enddo        
+        -:  646:        enddo    
+      257:  647:        A1(i) = n+A1(i)+2*j-3*ia 
+        -:  648:      enddo
+        -:  649:!dvm$ end region   
+        -:  650:
+        -:  651:
+      257:  652:      do i=1, AN1
+branch  0 taken 1% (fallthrough)
+branch  1 taken 100%
+      256:  653:        n = 0
+    33152:  654:        do ia = 1, B1(i)
+branch  0 taken 99% (fallthrough)
+branch  1 taken 1%
+        -:  655:            j = 1
+      256:  656:            do
+  2861952:  657:                n = n+1
+  2861952:  658:                if(j .gt. ia) then 
+branch  0 taken 1% (fallthrough)
+branch  1 taken 99%
+    32896:  659:                    n = n-1
+        -:  660:                    exit
+        -:  661:                endif
+  2829056:  662:                j = j+1
+        -:  663:            enddo        
+        -:  664:        enddo    
+      257:  665:        B1(i) = n+B1(i)+2*j-3*ia
+        -:  666:      enddo
+        -:  667:      erri= ER
+        -:  668:!dvm$ get_actual(A1)
+        -:  669:!dvm$ parallel (i) on A1(i), reduction( min( erri ) )
+      257:  670:      do i=1,AN1
+branch  0 taken 100% (fallthrough)
+branch  1 taken 1%
+      257:  671:            if ( abs(A1(i) - B1(i) ) .lt. 0.001 ) then         
+branch  0 taken 0% (fallthrough)
+branch  1 taken 100%
+        -:  672:            else
+    #####:  673:               erri = min(erri,i)
+        -:  674:            endif     
+        -:  675:      enddo  
+        -:  676:      
+        -:  677:      
+        1:  678:      if (erri .eq.ER) then     
+branch  0 taken 100% (fallthrough)
+branch  1 taken 0%
+        1:  679:          call ansyes(tname)
+call    0 returned 100%
+        -:  680:      else
+    #####:  681:          call ansno(tname)
+call    0 never executed
+        -:  682:      endif 
+       1*:  683:	  deallocate (A1)
+branch  0 taken 0% (fallthrough)
+branch  1 taken 100%
+call    2 never executed
+       1*:  684:	  deallocate (B1)
+branch  0 taken 0% (fallthrough)
+branch  1 taken 100%
+call    2 never executed
+        -:  685:
+        1:  686:      end
+        -:  687:C ----------------------------------------------------do21
+function do_while_true_ called 1 returned 100% blocks executed 81%
+        1:  688:      subroutine do_while_true
+        -:  689:      integer, parameter :: AN1=256, ER=10000    
+        -:  690:      character*18 tname
+        1:  691:      integer, allocatable :: A1(:)
+        1:  692:      integer, allocatable :: B1(:)
+        -:  693:      integer erri,i, ia
+        -:  694:!dvm$ distribute A1(BLOCK)
+        1:  695:      tname='do_while_true'
+        -:  696:	  
+        -:  697:	  
+        -:  698:    
+       1*:  699:      allocate (A1(AN1))
+branch  0 taken 0% (fallthrough)
+branch  1 taken 100%
+call    2 never executed
+       1*:  700:      allocate (B1(AN1))
+branch  0 taken 100% (fallthrough)
+branch  1 taken 0%
+call    2 never executed
+      257:  701:      erri= ER
+      257:  702:      do i=1,AN1
+branch  0 taken 1% (fallthrough)
+branch  1 taken 100%
+      257:  703:            B1(i) =i     
+        -:  704:      enddo
+        -:  705:
+        -:  706:!dvm$ region
+        -:  707:!dvm$ parallel (i) on A1(i)
+      257:  708:      do i=1,AN1
+branch  0 taken 1% (fallthrough)
+branch  1 taken 100%
+      257:  709:            A1(i) =i     
+        -:  710:      enddo
+        -:  711:
+        -:  712:
+        -:  713:!dvm$ parallel (i) on A1(i)
+      257:  714:      do i=1, AN1
+branch  0 taken 1% (fallthrough)
+branch  1 taken 100%
+        1:  715:            do while(.true.)
+      256:  716:                A1(i) = A1(i) + i
+      256:  717:                if(A1(i) .gt. 2*A1(i) .or. i .gt. A1(i) / 3 - 5) exit
+branch  0 taken 100% (fallthrough)
+branch  1 taken 0%
+branch  2 taken 0% (fallthrough)
+branch  3 taken 100%
+        -:  718:            enddo
+        -:  719:      enddo
+        -:  720:      
+        -:  721:!dvm$ end region   
+      257:  722:      do i=1, AN1
+branch  0 taken 1% (fallthrough)
+branch  1 taken 100%
+        1:  723:            do while(.true.)
+      256:  724:                B1(i) = B1(i) + i
+      256:  725:                if(B1(i) .gt. 2*B1(i) .or. i .gt. B1(i) / 3 - 5) exit
+branch  0 taken 100% (fallthrough)
+branch  1 taken 0%
+branch  2 taken 0% (fallthrough)
+branch  3 taken 100%
+        -:  726:            enddo
+        -:  727:      enddo
+        -:  728:      erri= ER
+        -:  729:!dvm$ get_actual(A1)
+        -:  730:!dvm$ parallel (i) on A1(i), reduction( min( erri ) )
+      257:  731:      do i=1,AN1
+branch  0 taken 100% (fallthrough)
+branch  1 taken 1%
+      257:  732:            if ( abs(A1(i) - B1(i) ) .lt. 0.001 ) then         
+branch  0 taken 0% (fallthrough)
+branch  1 taken 100%
+        -:  733:            else
+    #####:  734:               erri = min(erri,i)
+        -:  735:            endif     
+        -:  736:      enddo
+        -:  737:      
+        -:  738:
+        -:  739:     
+        1:  740:      if (erri .eq.ER) then     
+branch  0 taken 100% (fallthrough)
+branch  1 taken 0%
+        1:  741:          call ansyes(tname)
+call    0 returned 100%
+        -:  742:      else
+    #####:  743:          call ansno(tname)
+call    0 never executed
+        -:  744:      endif 
+       1*:  745:	  deallocate (A1)
+branch  0 taken 0% (fallthrough)
+branch  1 taken 100%
+call    2 never executed
+       1*:  746:	  deallocate (B1)
+branch  0 taken 0% (fallthrough)
+branch  1 taken 100%
+call    2 never executed
+        -:  747:
+        -:  748:
+        1:  749:      end
+        -:  750:C ----------------------------------------------------do22
+function do_while_expr_ called 1 returned 100% blocks executed 83%
+        1:  751:      subroutine do_while_expr
+        -:  752:      integer, parameter :: AN1=256, ER=10000    
+        -:  753:      character*18 tname
+        1:  754:      integer, allocatable :: A1(:)
+        1:  755:      integer, allocatable :: B1(:)
+        -:  756:      integer erri,i, ia
+        -:  757:!dvm$ distribute A1(BLOCK)
+        1:  758:      tname='do_while_expr'
+        -:  759:	  
+        -:  760:	  
+        -:  761:    
+       1*:  762:      allocate (A1(AN1))
+branch  0 taken 0% (fallthrough)
+branch  1 taken 100%
+call    2 never executed
+       1*:  763:      allocate (B1(AN1))
+branch  0 taken 100% (fallthrough)
+branch  1 taken 0%
+call    2 never executed
+      257:  764:      erri= ER
+      257:  765:      do i=1,AN1
+branch  0 taken 1% (fallthrough)
+branch  1 taken 100%
+      257:  766:            B1(i) =i     
+        -:  767:      enddo
+        -:  768:
+        -:  769:!dvm$ region
+        -:  770:!dvm$ parallel (i) on A1(i)
+      257:  771:      do i=1,AN1
+branch  0 taken 1% (fallthrough)
+branch  1 taken 100%
+      257:  772:            A1(i) =i     
+        -:  773:      enddo
+        -:  774:
+        -:  775:
+        -:  776:!dvm$ parallel (i) on A1(i)
+      257:  777:      do i=1, AN1
+branch  0 taken 1% (fallthrough)
+branch  1 taken 100%
+      257:  778:            do while(A1(i)*3 -40 .lt. A1(i) + 15)
+branch  0 taken 11% (fallthrough)
+branch  1 taken 89%
+       27:  779:                A1(i) = A1(i) + i
+      256:  780:                if(A1(i) .gt. 2*A1(i) .or. i .gt. A1(i) / 3 - 5) exit
+branch  0 taken 100% (fallthrough)
+branch  1 taken 0%
+branch  2 taken 0% (fallthrough)
+branch  3 taken 100%
+        -:  781:            enddo
+        -:  782:      enddo
+        -:  783:      
+        -:  784:!dvm$ end region   
+      257:  785:      do i=1, AN1
+branch  0 taken 1% (fallthrough)
+branch  1 taken 100%
+      257:  786:            do while(B1(i)*3 -40 .lt. B1(i) + 15)
+branch  0 taken 11% (fallthrough)
+branch  1 taken 89%
+       27:  787:                B1(i) = B1(i) + i
+      256:  788:                if(B1(i) .gt. 2*B1(i) .or. i .gt. B1(i) / 3 - 5) exit
+branch  0 taken 100% (fallthrough)
+branch  1 taken 0%
+branch  2 taken 0% (fallthrough)
+branch  3 taken 100%
+        -:  789:            enddo
+        -:  790:      enddo
+        -:  791:      erri= ER
+        -:  792:!dvm$ get_actual(A1)
+        -:  793:!dvm$ parallel (i) on A1(i), reduction( min( erri ) )
+      257:  794:      do i=1,AN1
+branch  0 taken 100% (fallthrough)
+branch  1 taken 1%
+      257:  795:            if ( abs(A1(i) - B1(i) ) .lt. 0.001 ) then         
+branch  0 taken 0% (fallthrough)
+branch  1 taken 100%
+        -:  796:            else
+    #####:  797:               erri = min(erri,i)
+        -:  798:            endif     
+        -:  799:      enddo
+        -:  800:      
+        -:  801:
+        -:  802:     
+        1:  803:      if (erri .eq.ER) then     
+branch  0 taken 100% (fallthrough)
+branch  1 taken 0%
+        1:  804:          call ansyes(tname)
+call    0 returned 100%
+        -:  805:      else
+    #####:  806:          call ansno(tname)
+call    0 never executed
+        -:  807:      endif 
+       1*:  808:	  deallocate (A1)
+branch  0 taken 0% (fallthrough)
+branch  1 taken 100%
+call    2 never executed
+       1*:  809:	  deallocate (B1)
+branch  0 taken 0% (fallthrough)
+branch  1 taken 100%
+call    2 never executed
+        -:  810:
+        -:  811:
+        -:  812:
+        1:  813:      end
+        -:  814:            
+        -:  815:C -------------------------------------------------
+        -:  816:
+function ansyes_ called 12 returned 100% blocks executed 100%
+       12:  817:      subroutine ansyes(name)
+        -:  818:      character*18 name
+       12:  819:      print *,name,'  -  complete'
+call    0 returned 100%
+call    1 returned 100%
+call    2 returned 100%
+call    3 returned 100%
+       12:  820:      end
+function ansno_ called 0 returned 0% blocks executed 0%
+    #####:  821:      subroutine ansno(name)
+        -:  822:      character*18 name
+    #####:  823:      print *,name,'  -  ***error'
+call    0 never executed
+call    1 never executed
+call    2 never executed
+call    3 never executed
+    #####:  824:      end
