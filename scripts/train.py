@@ -52,7 +52,7 @@ def main():
     parser.add_argument(
         '--test-programs',
         type=int,
-        default=3,
+        default=5,
         help='Количество программ для тестирования (по умолчанию: 3)'
     )
     

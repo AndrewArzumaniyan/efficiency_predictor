@@ -8,15 +8,22 @@
   ],
   "attention_dim": 64,
   "metrics": {
-    "mse": 0.0058272662572562695,
-    "mae": 0.05908746272325516,
-    "rmse": 0.07633653291351572,
-    "r2": 0.9475294947624207
+    "mse": 0.006322590634226799,
+    "mae": 0.04786121845245361,
+    "rmse": 0.07951471960729535,
+    "r2": 0.9185452461242676
   },
   "test_programs": [
-    "inoutlocal32",
-    "parallelNoOn1",
-    "align12"
+    "module21",
+    "distrmix2",
+    "sh11",
+    "realign11",
+    "reda43",
+    "rem41",
+    "parallel2",
+    "cons34",
+    "reda42",
+    "red32"
   ],
   "feature_names": [
     "sequential_execution_time",

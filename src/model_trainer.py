@@ -163,7 +163,7 @@ class DVMHModelTrainer:
         self.logger.info(f"Всего уникальных программ: {len(unique_programs)}")
         
         # Выбираем случайные программы для тестирования
-        random.seed(42)  # Для воспроизводимости
+        random.seed(41)  # Для воспроизводимости
         test_programs = random.sample(list(unique_programs), test_programs_count)
         self.logger.info(f"Выбраны программы для тестирования: {test_programs}")
         
