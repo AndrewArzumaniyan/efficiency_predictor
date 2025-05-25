@@ -1,0 +1,37 @@
+data_collection:
+  # Директории по умолчанию
+  default_source_dir: "./sources"
+  results_directory: "./data/raw"
+  problems_directory: "./problems"
+  
+  # Путь к SAPFOR
+  sapfor_executable: "../SAPFOR/_bin/Release/Sapfor_F.exe"
+  
+  # Размерности программ для обработки
+  dimensions: ["1d", "2d", "3d", "4d"]
+  
+  # Поддерживаемые расширения файлов
+  file_extensions: [".f", ".f90"]
+  
+  # Флаги компиляции для профилирования
+  compiler_flags: "-O3 -g -fprofile-arcs -ftest-coverage"
+  
+  # Шаблоны временных файлов для очистки
+  temp_file_patterns:
+    - "*.gcda"
+    - "*.gcno"
+    - "*.gcov"
+    - "*.dep"
+    - "*.proj"
+    - "*.mod"
+  
+  # Файлы для сохранения в результатах
+  preserved_files:
+    - "info.json"
+    - "*_output.log"
+    - "*.gcov"
+  
+  # Настройки логирования для сбора данных
+  logging:
+    level: "INFO"
+    format: "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
