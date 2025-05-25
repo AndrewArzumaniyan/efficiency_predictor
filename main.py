@@ -208,21 +208,107 @@ def mode_features(args):
 
 
 def mode_train(args):
-    """Режим обучения модели (заглушка)"""
+    """Режим обучения модели"""
     logger = logging.getLogger(__name__)
     logger.info("=== РЕЖИМ: Обучение модели ===")
-    logger.warning("Режим обучения модели пока не реализован")
-    logger.info("Для обучения модели используйте scripts/train.py")
-    return 0
+    
+    # Проверяем наличие датасета
+    if not args.dataset:
+        logger.error("Необходимо указать путь к датасету с помощью --dataset")
+        return 1
+    
+    if not os.path.exists(args.dataset):
+        logger.error(f"Датасет не найден: {args.dataset}")
+        return 1
+    
+    try:
+        import pandas as pd
+        from src.model_trainer import DVMHModelTrainer
+        
+        # Загружаем датасет
+        logger.info(f"Загрузка датасета: {args.dataset}")
+        df = pd.read_csv(args.dataset, low_memory=False)
+        logger.info(f"Загружен датасет: {df.shape[0]} строк, {df.shape[1]} столбцов")
+        
+        # Инициализируем тренер
+        trainer = DVMHModelTrainer(args.config)
+        
+        # Запускаем обучение
+        results = trainer.run_full_training(
+            df=df,
+            target_column='target_speedup',
+            test_programs_count=3,
+            epochs=100,
+            batch_size=128
+        )
+        
+        # Выводим результаты
+        logger.info("Результаты обучения:")
+        logger.info(f"MLP R²: {results['mlp_metrics']['r2']:.4f}")
+        logger.info(f"Attention R²: {results['attention_metrics']['r2']:.4f}")
+        
+        logger.info("Обучение модели завершено успешно")
+        return 0
+        
+    except ImportError:
+        logger.error("Для обучения моделей необходимо установить PyTorch")
+        logger.info("Выполните: pip install torch torchvision")
+        return 1
+    except Exception as e:
+        logger.error(f"Ошибка при обучении модели: {str(e)}")
+        return 1
 
 
 def mode_predict(args):
-    """Режим предсказания (заглушка)"""
+    """Режим предсказания"""
     logger = logging.getLogger(__name__)
     logger.info("=== РЕЖИМ: Предсказание ===")
-    logger.warning("Режим предсказания пока не реализован")
-    logger.info("Для предсказания используйте scripts/predict.py")
-    return 0
+    
+    try:
+        from src.predictor import DVMHPerformancePredictor
+        
+        # Инициализируем предиктор
+        predictor = DVMHPerformancePredictor(args.config)
+        
+        # Проверяем, есть ли обученные модели
+        models_dir = predictor.models_dir
+        if not os.path.exists(models_dir):
+            logger.error(f"Директория с моделями не найдена: {models_dir}")
+            logger.info("Сначала обучите модель с помощью команды 'train'")
+            return 1
+        
+        # Ищем доступные модели
+        model_files = [f for f in os.listdir(models_dir) if f.endswith('.pt')]
+        if not model_files:
+            logger.error("Не найдено обученных моделей")
+            logger.info("Сначала обучите модель с помощью команды 'train'")
+            return 1
+        
+        # Загружаем первую доступную модель
+        model_name = model_files[0].replace('.pt', '')
+        model_type = 'attention' if 'attention' in model_name else 'mlp'
+        
+        if not predictor.load_model(model_name, model_type):
+            logger.error("Не удалось загрузить модель")
+            return 1
+        
+        # Получаем информацию о модели
+        model_info = predictor.get_model_info(model_name)
+        logger.info(f"Загружена модель: {model_info['model_name']} ({model_info['model_type']})")
+        logger.info(f"Метрики модели: R² = {model_info['metrics'].get('r2', 'N/A')}")
+        
+        logger.info("Предсказание готово к использованию")
+        logger.info("Для подробного предсказания используйте scripts/predict.py")
+        
+        return 0
+        
+    except ImportError:
+        logger.error("Для предсказания необходимо установить PyTorch")
+        logger.info("Выполните: pip install torch torchvision")
+        return 1
+    except Exception as e:
+        logger.error(f"Ошибка в режиме предсказания: {str(e)}")
+        return 1
 
 
 def mode_pipeline(args):
