@@ -76,18 +76,27 @@ class DVMHAttentionModel(nn.Module):
         self.output_layers = nn.Sequential(*layers)
         
     def attention(self, embedded):
-        q = self.query(embedded).unsqueeze(1)
-        k = self.key(embedded).unsqueeze(2)
-        v = self.value(embedded)
+        batch_size = embedded.size(0)
         
-        attention_weights = torch.bmm(q, k).squeeze()
-        attention_weights = torch.sigmoid(attention_weights)
+        q = self.query(embedded)  # [batch_size, attention_dim]
+        k = self.key(embedded)    # [batch_size, attention_dim]
+        v = self.value(embedded)  # [batch_size, attention_dim]
         
-        attended = attention_weights.unsqueeze(1) * v
+        # Вычисляем attention weights
+        # Для single vector attention используем dot product с самим собой
+        attention_scores = torch.sum(q * k, dim=1, keepdim=True)  # [batch_size, 1]
+        attention_weights = torch.sigmoid(attention_scores)       # [batch_size, 1]
         
-        return attended, attention_weights
+        # Применяем веса к значениям
+        attended = attention_weights * v  # [batch_size, attention_dim]
+        
+        return attended, attention_weights.squeeze(-1)  # [batch_size, attention_dim], [batch_size]
         
     def forward(self, x):
+        # Убеждаемся что входной тензор имеет правильную размерность
+        if x.dim() == 1:
+            x = x.unsqueeze(0)  # Добавляем batch dimension
+        
         embedded = self.embedding(x)
         embedded = self.bn1(embedded)
         embedded = nn.functional.relu(embedded)
@@ -96,7 +105,7 @@ class DVMHAttentionModel(nn.Module):
         
         output = self.output_layers(attended)
         
-        return output.squeeze(), attention_weights
+        return output.squeeze(-1), attention_weights
 
 
 class DVMHModelTrainer:
@@ -209,6 +218,8 @@ class DVMHModelTrainer:
         X_train_val = pd.DataFrame(imputer.fit_transform(X_train_val), columns=X_train_val.columns)
         X_test = pd.DataFrame(imputer.transform(X_test), columns=X_test.columns)
         
+        self.imputer = imputer
+
         # Разделяем на обучающую и валидационную выборки
         X_train, X_val, y_train, y_val = train_test_split(
             X_train_val, y_train_val, test_size=val_size, random_state=42
@@ -219,6 +230,8 @@ class DVMHModelTrainer:
         X_train_scaled = scaler.fit_transform(X_train)
         X_val_scaled = scaler.transform(X_val)
         X_test_scaled = scaler.transform(X_test)
+
+        self.scaler = scaler
         
         # Преобразуем в нужный формат
         X_train_scaled = X_train_scaled.astype(np.float32)
@@ -550,9 +563,16 @@ class DVMHModelTrainer:
         return importance_df, fig
     
     def save_model(self, model: nn.Module, model_name: str, metadata: Dict = None) -> str:
-        """Сохранение модели"""
+        """Сохранение модели с импутером и скейлером"""
         model_path = os.path.join(self.models_dir, f"{model_name}.pt")
-        torch.save(model.state_dict(), model_path)
+        
+        # Сохраняем модель, импутер и скейлер в одном файле
+        # Используем протокол pickle для совместимости
+        torch.save({
+            'model_state_dict': model.state_dict(),
+            'imputer': self.imputer,
+            'scaler': self.scaler
+        }, model_path, pickle_protocol=4)
         
         # Сохраняем метаданные
         if metadata:
@@ -560,7 +580,7 @@ class DVMHModelTrainer:
             with open(metadata_path, 'w', encoding='utf-8') as f:
                 json.dump(metadata, f, indent=2, ensure_ascii=False)
         
-        self.logger.info(f"Модель сохранена: {model_path}")
+        self.logger.info(f"Модель с препроцессорами сохранена: {model_path}")
         return model_path
     
     def run_full_training(self, df: pd.DataFrame, target_column: str = 'target_speedup',

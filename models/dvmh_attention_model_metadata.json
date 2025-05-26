@@ -8,22 +8,17 @@
   ],
   "attention_dim": 64,
   "metrics": {
-    "mse": 0.006322590634226799,
-    "mae": 0.04786121845245361,
-    "rmse": 0.07951471960729535,
-    "r2": 0.9185452461242676
+    "mse": 0.0022494334261864424,
+    "mae": 0.03340385854244232,
+    "rmse": 0.04742819231413361,
+    "r2": 0.975010871887207
   },
   "test_programs": [
     "module21",
     "distrmix2",
     "sh11",
     "realign11",
-    "reda43",
-    "rem41",
-    "parallel2",
-    "cons34",
-    "reda42",
-    "red32"
+    "reda43"
   ],
   "feature_names": [
     "sequential_execution_time",
