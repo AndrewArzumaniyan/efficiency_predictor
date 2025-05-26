@@ -17,6 +17,9 @@ import json
 import random
 from typing import Dict, List, Tuple, Any, Optional
 import warnings
+
+from .feature_preprocessor import DVMHFeaturePreprocessor
+
 warnings.filterwarnings('ignore')
 
 logger = logging.getLogger(__name__)
@@ -145,9 +148,9 @@ class DVMHModelTrainer:
             return {}
     
     def prepare_data_by_programs(self, df: pd.DataFrame, target_column: str = 'target_speedup', 
-                                test_programs_count: int = 3, val_size: float = 0.2) -> Dict:
+                            test_programs_count: int = 3, val_size: float = 0.2) -> Dict:
         """
-        Подготовка данных с разделением по программам
+        Подготовка данных с разделением по программам (ОБНОВЛЕННАЯ ВЕРСИЯ)
         
         Args:
             df: Исходный датафрейм
@@ -158,7 +161,7 @@ class DVMHModelTrainer:
         Returns:
             Dict: Подготовленные данные
         """
-        self.logger.info("Подготовка данных с разделением по программам...")
+        self.logger.info("Подготовка данных с разделением по программам (новая версия)...")
         
         df_copy = df.copy()
         
@@ -184,83 +187,68 @@ class DVMHModelTrainer:
         self.logger.info(f"Размер тренировочной выборки: {df_train_val.shape[0]} объектов")
         self.logger.info(f"Размер тестовой выборки: {df_test.shape[0]} объектов")
         
-        # Обрабатываем данные
-        df_train_val, df_test = self._preprocess_data(df_train_val, df_test)
+        # Создаем и обучаем препроцессор на тренировочных данных
+        self.logger.info("Создание и обучение препроцессора...")
+        self.preprocessor = DVMHFeaturePreprocessor()
         
-        # Убираем ненужные колонки
-        drop_columns = ['parallel_execution_time', 'launch_config', 
-                       'normalized_parallel_time', 'efficiency', 'program_name']
-        for col in drop_columns:
-            if col in df_train_val.columns:
-                df_train_val = df_train_val.drop(columns=[col])
-            if col in df_test.columns:
-                df_test = df_test.drop(columns=[col])
-        
-        # Разделяем на признаки и целевую переменную
-        if target_column not in df_train_val.columns:
-            raise ValueError(f"Целевая переменная {target_column} не найдена в данных")
-        
-        X_train_val = df_train_val.drop(columns=[target_column])
-        y_train_val = df_train_val[target_column]
-        X_test = df_test.drop(columns=[target_column])
-        y_test = df_test[target_column]
-        
-        # Обрабатываем пропущенные значения
-        imputer = SimpleImputer(strategy='median')
+        # Разделяем тренировочные данные на X и y перед обучением препроцессора
+        y_train_val = df_train_val[target_column].copy()
+        y_test = df_test[target_column].copy()
         
         # Заполняем пропущенные значения в целевой переменной
         if y_train_val.isna().any():
             target_median = y_train_val.median()
             y_train_val = y_train_val.fillna(target_median)
             y_test = y_test.fillna(target_median)
+            self.logger.info(f"Заполнены NaN в целевой переменной медианой: {target_median}")
         
-        # Обрабатываем признаки
-        X_train_val = pd.DataFrame(imputer.fit_transform(X_train_val), columns=X_train_val.columns)
-        X_test = pd.DataFrame(imputer.transform(X_test), columns=X_test.columns)
+        # Обучаем препроцессор на тренировочных данных
+        X_train_val_processed = self.preprocessor.fit_transform(df_train_val, target_column)
         
-        self.imputer = imputer
-
+        # Применяем препроцессор к тестовым данным
+        X_test_processed = self.preprocessor.transform(df_test)
+        
+        self.logger.info(f"Размерность обработанных признаков: {X_train_val_processed.shape[1]}")
+        
         # Разделяем на обучающую и валидационную выборки
         X_train, X_val, y_train, y_val = train_test_split(
-            X_train_val, y_train_val, test_size=val_size, random_state=42
+            X_train_val_processed, y_train_val, test_size=val_size, random_state=42
         )
         
-        # Нормализуем данные
-        scaler = StandardScaler()
-        X_train_scaled = scaler.fit_transform(X_train)
-        X_val_scaled = scaler.transform(X_val)
-        X_test_scaled = scaler.transform(X_test)
-
-        self.scaler = scaler
-        
         # Преобразуем в нужный формат
-        X_train_scaled = X_train_scaled.astype(np.float32)
-        X_val_scaled = X_val_scaled.astype(np.float32)
-        X_test_scaled = X_test_scaled.astype(np.float32)
+        X_train = X_train.astype(np.float32)
+        X_val = X_val.astype(np.float32)
+        X_test_processed = X_test_processed.astype(np.float32)
         y_train = y_train.values.astype(np.float32)
         y_val = y_val.values.astype(np.float32)
         y_test = y_test.values.astype(np.float32)
         
         # Финальная проверка на NaN
-        for name, data in [('X_train', X_train_scaled), ('X_val', X_val_scaled), 
-                          ('X_test', X_test_scaled), ('y_train', y_train), 
-                          ('y_val', y_val), ('y_test', y_test)]:
+        for name, data in [('X_train', X_train), ('X_val', X_val), 
+                        ('X_test', X_test_processed), ('y_train', y_train), 
+                        ('y_val', y_val), ('y_test', y_test)]:
             nan_count = np.isnan(data).sum()
             if nan_count > 0:
                 self.logger.warning(f"NaN в {name}: {nan_count}. Заменяем на 0.")
-                data = np.nan_to_num(data, nan=0.0)
+                if name.startswith('X'):
+                    data = np.nan_to_num(data, nan=0.0)
+                else:
+                    data = np.nan_to_num(data, nan=1.0)  # Для y используем 1.0 как fallback
+        
+        self.logger.info("Подготовка данных завершена успешно")
         
         return {
-            'X_train': X_train_scaled,
-            'X_val': X_val_scaled,
-            'X_test': X_test_scaled,
+            'X_train': X_train,
+            'X_val': X_val,
+            'X_test': X_test_processed,
             'y_train': y_train,
             'y_val': y_val,
             'y_test': y_test,
-            'feature_names': X_train_val.columns.tolist(),
-            'scaler': scaler,
+            'feature_names': self.preprocessor.get_feature_names(),
+            'preprocessor': self.preprocessor,  # Добавляем препроцессор
             'test_programs': test_programs
         }
+
     
     def _preprocess_data(self, df_train: pd.DataFrame, df_test: pd.DataFrame) -> Tuple[pd.DataFrame, pd.DataFrame]:
         """Предобработка данных"""
@@ -563,24 +551,24 @@ class DVMHModelTrainer:
         return importance_df, fig
     
     def save_model(self, model: nn.Module, model_name: str, metadata: Dict = None) -> str:
-        """Сохранение модели с импутером и скейлером"""
+        """Сохранение модели с препроцессором (ОБНОВЛЕННАЯ ВЕРСИЯ)"""
         model_path = os.path.join(self.models_dir, f"{model_name}.pt")
         
-        # Сохраняем модель, импутер и скейлер в одном файле
-        # Используем протокол pickle для совместимости
+        # Сохраняем модель и препроцессор
         torch.save({
             'model_state_dict': model.state_dict(),
-            'imputer': self.imputer,
-            'scaler': self.scaler
+            'preprocessor': self.preprocessor  # Теперь сохраняем весь препроцессор
         }, model_path, pickle_protocol=4)
         
-        # Сохраняем метаданные
+        # Дополняем метаданные информацией о препроцессоре
         if metadata:
+            metadata.update(self.preprocessor.get_metadata())
+            
             metadata_path = os.path.join(self.models_dir, f"{model_name}_metadata.json")
             with open(metadata_path, 'w', encoding='utf-8') as f:
                 json.dump(metadata, f, indent=2, ensure_ascii=False)
         
-        self.logger.info(f"Модель с препроцессорами сохранена: {model_path}")
+        self.logger.info(f"Модель с препроцессором сохранена: {model_path}")
         return model_path
     
     def run_full_training(self, df: pd.DataFrame, target_column: str = 'target_speedup',
@@ -619,6 +607,7 @@ class DVMHModelTrainer:
         y_test = data['y_test']
         feature_names = data['feature_names']
         test_programs = data['test_programs']
+        self.preprocessor = data['preprocessor']
         
         self.logger.info(f"Training set: {X_train.shape}")
         self.logger.info(f"Validation set: {X_val.shape}")

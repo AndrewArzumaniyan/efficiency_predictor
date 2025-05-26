@@ -10,6 +10,10 @@ import torch
 import torch.nn as nn
 from typing import Dict, List, Optional, Union, Tuple, Any
 import warnings
+import re
+
+from .feature_preprocessor import DVMHFeaturePreprocessor
+
 warnings.filterwarnings('ignore')
 
 logger = logging.getLogger(__name__)
@@ -20,7 +24,7 @@ class DVMHPerformancePredictor:
     
     def __init__(self, config_path: str = "config/data_config.yaml"):
         """
-        Инициализация предиктора
+        Инициализация предиктора (ОБНОВЛЕННАЯ ВЕРСИЯ)
         
         Args:
             config_path: Путь к конфигурационному файлу
@@ -38,8 +42,7 @@ class DVMHPerformancePredictor:
         # Инициализация компонентов модели
         self.model = None
         self.model_metadata = None
-        self.scaler = None
-        self.imputer = None
+        self.preprocessor = None  # Заменяем scaler, imputer на preprocessor
         self.feature_names = None
         self.model_type = None
         
@@ -64,79 +67,111 @@ class DVMHPerformancePredictor:
             self.logger.warning(f"Конфигурационный файл не найден: {config_path}")
             return {}
     
-    def load_model(self, model_name: str, model_type: str = 'mlp') -> bool:
+    # def load_model(self, model_name: str, model_type: str = 'mlp') -> bool:
+    #     """
+    #     Загрузка обученной модели с препроцессором (ОБНОВЛЕННАЯ ВЕРСИЯ)
+        
+    #     Args:
+    #         model_name: Имя модели (без расширения .pt)
+    #         model_type: Тип модели ('mlp' или 'attention')
+            
+    #     Returns:
+    #         bool: True если модель загружена успешно
+    #     """
+    #     self.logger.info(f"Загрузка модели: {model_name} (тип: {model_type})")
+        
+    #     # Пути к файлам модели
+    #     model_path = os.path.join(self.models_dir, f"{model_name}.pt")
+    #     metadata_path = os.path.join(self.models_dir, f"{model_name}_metadata.json")
+        
+    #     # Проверяем существование файлов
+    #     if not os.path.exists(model_path):
+    #         self.logger.error(f"Файл модели не найден: {model_path}")
+    #         return False
+        
+    #     if not os.path.exists(metadata_path):
+    #         self.logger.error(f"Файл метаданных не найден: {metadata_path}")
+    #         return False
+        
+    #     try:
+    #         # Загружаем метаданные
+    #         with open(metadata_path, 'r', encoding='utf-8') as f:
+    #             self.model_metadata = json.load(f)
+            
+    #         # Загружаем checkpoint с моделью и препроцессором
+    #         try:
+    #             checkpoint = torch.load(model_path, map_location=self.device, weights_only=False)
+    #         except Exception as e:
+    #             # Fallback для старых версий PyTorch
+    #             self.logger.warning(f"Fallback к старому методу загрузки: {str(e)}")
+    #             checkpoint = torch.load(model_path, map_location=self.device)
+            
+    #         # Извлекаем компоненты
+    #         model_state_dict = checkpoint['model_state_dict']
+            
+    #         # ГЛАВНОЕ ИЗМЕНЕНИЕ: загружаем препроцессор вместо отдельных компонентов
+    #         if 'preprocessor' in checkpoint:
+    #             self.preprocessor = checkpoint['preprocessor']
+    #             self.logger.info("Загружен новый препроцессор")
+    #         else:
+    #             # Обратная совместимость со старыми моделями
+    #             self.logger.warning("Старый формат модели, создаем fallback препроцессор")
+    #             self.preprocessor = self._create_fallback_preprocessor(checkpoint)
+            
+    #         # Получаем параметры модели из метаданных
+    #         input_dim = self.model_metadata['input_dim']
+    #         hidden_dims = self.model_metadata['hidden_dims']
+    #         self.feature_names = self.model_metadata.get('feature_names', [])
+    #         self.model_type = model_type.lower()
+            
+    #         # Создаем модель нужного типа
+    #         if self.model_type == 'attention':
+    #             attention_dim = self.model_metadata.get('attention_dim', 64)
+    #             self.model = self.DVMHAttentionModel(input_dim, hidden_dims, attention_dim)
+    #         else:
+    #             self.model = self.DVMHEfficiencyMLP(input_dim, hidden_dims)
+            
+    #         # Загружаем веса
+    #         self.model.load_state_dict(model_state_dict)
+    #         self.model.to(self.device)
+    #         self.model.eval()
+            
+    #         self.logger.info(f"Модель {model_name} загружена успешно")
+    #         self.logger.info(f"Размерность входа: {input_dim}")
+    #         self.logger.info(f"Архитектура: {hidden_dims}")
+    #         self.logger.info(f"Количество признаков: {len(self.feature_names)}")
+            
+    #         return True
+            
+    #     except Exception as e:
+    #         self.logger.error(f"Ошибка при загрузке модели: {str(e)}")
+    #         return False
+        
+    def _create_fallback_preprocessor(self, checkpoint: Dict) -> DVMHFeaturePreprocessor:
         """
-        Загрузка обученной модели с препроцессорами
+        Создание fallback препроцессора для обратной совместимости
         
         Args:
-            model_name: Имя модели (без расширения .pt)
-            model_type: Тип модели ('mlp' или 'attention')
+            checkpoint: Данные из старой модели
             
         Returns:
-            bool: True если модель загружена успешно
+            DVMHFeaturePreprocessor: Простой препроцессор
         """
-        self.logger.info(f"Загрузка модели: {model_name} (тип: {model_type})")
+        self.logger.warning("Создание fallback препроцессора для старой модели")
         
-        # Пути к файлам модели
-        model_path = os.path.join(self.models_dir, f"{model_name}.pt")
-        metadata_path = os.path.join(self.models_dir, f"{model_name}_metadata.json")
+        preprocessor = DVMHFeaturePreprocessor()
         
-        # Проверяем существование файлов
-        if not os.path.exists(model_path):
-            self.logger.error(f"Файл модели не найден: {model_path}")
-            return False
+        # Переносим старые компоненты если есть
+        if 'imputer' in checkpoint:
+            preprocessor.imputer = checkpoint['imputer']
+        if 'scaler' in checkpoint:
+            preprocessor.scaler = checkpoint['scaler']
         
-        if not os.path.exists(metadata_path):
-            self.logger.error(f"Файл метаданных не найден: {metadata_path}")
-            return False
+        # Устанавливаем базовые параметры
+        preprocessor.feature_order = self.feature_names
+        preprocessor.is_fitted = True
         
-        try:
-            # Загружаем метаданные
-            with open(metadata_path, 'r', encoding='utf-8') as f:
-                self.model_metadata = json.load(f)
-            
-            # Загружаем checkpoint с моделью, импутером и скейлером
-            # Отключаем weights_only для совместимости с sklearn объектами
-            try:
-                checkpoint = torch.load(model_path, map_location=self.device, weights_only=False)
-            except Exception as e:
-                # Fallback для старых версий PyTorch
-                self.logger.warning(f"Fallback к старому методу загрузки: {str(e)}")
-                checkpoint = torch.load(model_path, map_location=self.device)
-            
-            # Извлекаем компоненты
-            model_state_dict = checkpoint['model_state_dict']
-            self.imputer = checkpoint['imputer']
-            self.scaler = checkpoint['scaler']
-            
-            # Получаем параметры модели из метаданных
-            input_dim = self.model_metadata['input_dim']
-            hidden_dims = self.model_metadata['hidden_dims']
-            self.feature_names = self.model_metadata['feature_names']
-            self.model_type = model_type.lower()
-            
-            # Создаем модель нужного типа
-            if self.model_type == 'attention':
-                attention_dim = self.model_metadata.get('attention_dim', 64)
-                self.model = self.DVMHAttentionModel(input_dim, hidden_dims, attention_dim)
-            else:
-                self.model = self.DVMHEfficiencyMLP(input_dim, hidden_dims)
-            
-            # Загружаем веса
-            self.model.load_state_dict(model_state_dict)
-            self.model.to(self.device)
-            self.model.eval()
-            
-            self.logger.info(f"Модель {model_name} загружена успешно")
-            self.logger.info(f"Размерность входа: {input_dim}")
-            self.logger.info(f"Архитектура: {hidden_dims}")
-            self.logger.info(f"Количество признаков: {len(self.feature_names)}")
-            
-            return True
-            
-        except Exception as e:
-            self.logger.error(f"Ошибка при загрузке модели: {str(e)}")
-            return False
+        return preprocessor
     
     def process_fortran_file(self, fortran_file_path: str) -> Optional[Dict]:
         """
@@ -252,7 +287,7 @@ class DVMHPerformancePredictor:
     
     def preprocess_features(self, features_df: pd.DataFrame) -> Optional[np.ndarray]:
         """
-        Предобработка признаков с консистентным кодированием (ИСПРАВЛЕНО)
+        Предобработка признаков с использованием обученного препроцессора (НОВАЯ ВЕРСИЯ)
         
         Args:
             features_df: DataFrame с признаками
@@ -260,91 +295,18 @@ class DVMHPerformancePredictor:
         Returns:
             np.ndarray или None: Обработанные признаки
         """
-        self.logger.info("Предобработка признаков (исправленная версия)")
+        self.logger.info("Предобработка признаков (новая версия с препроцессором)")
         
-        if self.imputer is None or self.scaler is None:
-            self.logger.error("Препроцессоры не загружены. Сначала загрузите модель.")
+        if self.preprocessor is None:
+            self.logger.error("Препроцессор не загружен. Сначала загрузите модель.")
             return None
         
         try:
-            features_df = features_df.copy()
+            # Используем препроцессор для обработки
+            features_array = self.preprocessor.transform(features_df)
             
-            # Убираем служебные колонки
-            exclude_columns = ['parallel_execution_time', 'launch_config', 
-                             'normalized_parallel_time', 'efficiency', 
-                             'program_name', 'target_speedup']
-            
-            columns_to_drop = [col for col in exclude_columns if col in features_df.columns]
-            if columns_to_drop:
-                self.logger.debug(f"Удаляем колонки: {columns_to_drop}")
-                features_df = features_df.drop(columns=columns_to_drop)
-            
-            # ИСПРАВЛЕНИЕ: Обрабатываем категориальные признаки как при обучении
-            categorical_columns = features_df.select_dtypes(include=['object']).columns.tolist()
-            if 'program_name' in categorical_columns:
-                categorical_columns.remove('program_name')
-            
-            for col in categorical_columns:
-                # Заполняем NaN как при обучении
-                features_df[col] = features_df[col].fillna("unknown")
-                
-                # КРИТИЧЕСКОЕ ИСПРАВЛЕНИЕ: Используем детерминистичное кодирование
-                if features_df[col].dtype == 'object':
-                    # Простое детерминистичное кодирование вместо hash
-                    unique_values = sorted(features_df[col].unique())
-                    category_mapping = {val: idx for idx, val in enumerate(unique_values)}
-                    features_df[col] = features_df[col].map(category_mapping)
-                    self.logger.debug(f"Категории для {col}: {category_mapping}")
-            
-            # Обрабатываем смешанные типы как при обучении
-            for col in features_df.columns:
-                if features_df[col].dtype == 'object':
-                    try:
-                        features_df[col] = pd.to_numeric(features_df[col], errors='coerce')
-                    except:
-                        features_df[col] = features_df[col].fillna("unknown").astype('category').cat.codes
-            
-            # Убеждаемся в правильном порядке признаков
-            if self.feature_names:
-                missing_features = set(self.feature_names) - set(features_df.columns)
-                extra_features = set(features_df.columns) - set(self.feature_names)
-                
-                if missing_features:
-                    self.logger.warning(f"Отсутствующие признаки (заполняем нулями): {missing_features}")
-                    for feature in missing_features:
-                        features_df[feature] = 0
-                
-                if extra_features:
-                    self.logger.debug(f"Лишние признаки (удаляем): {extra_features}")
-                    features_df = features_df.drop(columns=list(extra_features))
-                
-                # КРИТИЧЕСКИ ВАЖНО: Строгий порядок как при обучении
-                features_df = features_df[self.feature_names]
-                
-                self.logger.info(f"Финальная размерность признаков: {features_df.shape}")
-                self.logger.debug(f"Первые 5 признаков: {list(features_df.columns[:5])}")
-            
-            # Применяем препроцессоры
-            features_imputed = self.imputer.transform(features_df)
-            features_scaled = self.scaler.transform(features_imputed)
-            
-            features_array = features_scaled.astype(np.float32)
-            
-            # Финальная проверка и отладка
-            nan_count = np.isnan(features_array).sum()
-            if nan_count > 0:
-                self.logger.warning(f"Найдено NaN значений: {nan_count}. Заменяем на 0.")
-                features_array = np.nan_to_num(features_array, nan=0.0)
-            
-            # Отладочная информация
             self.logger.info(f"Предобработка завершена. Размерность: {features_array.shape}")
             self.logger.debug(f"Статистика: min={features_array.min():.4f}, max={features_array.max():.4f}, mean={features_array.mean():.4f}")
-            
-            # Проверка на выбросы
-            outliers = np.abs(features_array) > 5
-            if outliers.any():
-                outlier_count = outliers.sum()
-                self.logger.warning(f"Обнаружены выбросы (|x| > 5): {outlier_count}")
             
             return features_array
             
@@ -516,3 +478,340 @@ class DVMHPerformancePredictor:
                 models.append(model_name)
         
         return models
+    
+    def list_available_models(self) -> List[str]:
+        """Получение списка доступных моделей (включая дообученные)"""
+        models = []
+        
+        # Обычные модели
+        if os.path.exists(self.models_dir):
+            for file in os.listdir(self.models_dir):
+                if file.endswith('.pt'):
+                    model_name = file[:-3]
+                    models.append(model_name)
+        
+        # Дообученные модели
+        finetune_dir = os.path.join(self.models_dir, 'finetuned')
+        if os.path.exists(finetune_dir):
+            for file in os.listdir(finetune_dir):
+                if file.endswith('.pt'):
+                    model_name = file[:-3]
+                    models.append(f"finetuned/{model_name}")
+        
+        return sorted(models)
+
+    def load_model(self, model_name: str, model_type: str = 'mlp') -> bool:
+        """
+        Загрузка модели с поддержкой дообученных моделей (ОБНОВЛЕННАЯ ВЕРСИЯ)
+        
+        Args:
+            model_name: Имя модели (может включать префикс finetuned/)
+            model_type: Тип модели ('mlp' или 'attention')
+            
+        Returns:
+            bool: True если модель загружена успешно
+        """
+        self.logger.info(f"Загрузка модели: {model_name} (тип: {model_type})")
+        
+        # Определяем пути к файлам
+        if model_name.startswith('finetuned/'):
+            # Дообученная модель
+            actual_model_name = model_name[10:]  # Убираем префикс 'finetuned/'
+            model_path = os.path.join(self.models_dir, 'finetuned', f"{actual_model_name}.pt")
+            metadata_path = os.path.join(self.models_dir, 'finetuned', f"{actual_model_name}_metadata.json")
+            self.logger.info(f"Загрузка дообученной модели: {actual_model_name}")
+        else:
+            # Обычная модель
+            model_path = os.path.join(self.models_dir, f"{model_name}.pt")
+            metadata_path = os.path.join(self.models_dir, f"{model_name}_metadata.json")
+        
+        # Проверяем существование файлов
+        if not os.path.exists(model_path):
+            self.logger.error(f"Файл модели не найден: {model_path}")
+            return False
+        
+        if not os.path.exists(metadata_path):
+            self.logger.error(f"Файл метаданных не найден: {metadata_path}")
+            return False
+        
+        try:
+            # Загружаем метаданные
+            with open(metadata_path, 'r', encoding='utf-8') as f:
+                self.model_metadata = json.load(f)
+            
+            # Определяем тип модели автоматически, если это дообученная модель
+            if 'model_type' in self.model_metadata:
+                detected_type = self.model_metadata['model_type'].lower()
+                if 'attention' in detected_type:
+                    model_type = 'attention'
+                else:
+                    model_type = 'mlp'
+                self.logger.info(f"Автоматически определен тип модели: {model_type}")
+            
+            # Загружаем checkpoint
+            try:
+                checkpoint = torch.load(model_path, map_location=self.device, weights_only=False)
+            except Exception as e:
+                self.logger.warning(f"Fallback к старому методу загрузки: {str(e)}")
+                checkpoint = torch.load(model_path, map_location=self.device)
+            
+            # Извлекаем компоненты
+            model_state_dict = checkpoint['model_state_dict']
+            
+            # Загружаем препроцессор
+            if 'preprocessor' in checkpoint:
+                self.preprocessor = checkpoint['preprocessor']
+                self.logger.info("Загружен препроцессор")
+            else:
+                self.logger.warning("Старый формат модели, создаем fallback препроцессор")
+                self.preprocessor = self._create_fallback_preprocessor(checkpoint)
+            
+            # Получаем параметры модели
+            input_dim = self.model_metadata['input_dim']
+            hidden_dims = self.model_metadata['hidden_dims']
+            self.feature_names = self.model_metadata.get('feature_names', [])
+            self.model_type = model_type.lower()
+            
+            # Создаем модель нужного типа
+            if self.model_type == 'attention':
+                attention_dim = self.model_metadata.get('attention_dim', 64)
+                self.model = self.DVMHAttentionModel(input_dim, hidden_dims, attention_dim)
+            else:
+                self.model = self.DVMHEfficiencyMLP(input_dim, hidden_dims)
+            
+            # Загружаем веса
+            self.model.load_state_dict(model_state_dict)
+            self.model.to(self.device)
+            self.model.eval()
+            
+            # Дополнительная информация для дообученных моделей
+            if model_name.startswith('finetuned/'):
+                if 'base_model_name' in self.model_metadata:
+                    self.logger.info(f"Базовая модель: {self.model_metadata['base_model_name']}")
+                if 'fine_tune_strategy' in self.model_metadata:
+                    self.logger.info(f"Стратегия дообучения: {self.model_metadata['fine_tune_strategy']}")
+                if 'fine_tune_timestamp' in self.model_metadata:
+                    self.logger.info(f"Дата дообучения: {self.model_metadata['fine_tune_timestamp']}")
+            
+            self.logger.info(f"Модель {model_name} загружена успешно")
+            self.logger.info(f"Размерность входа: {input_dim}")
+            self.logger.info(f"Архитектура: {hidden_dims}")
+            self.logger.info(f"Количество признаков: {len(self.feature_names)}")
+            
+            return True
+            
+        except Exception as e:
+            self.logger.error(f"Ошибка при загрузке модели: {str(e)}")
+            return False
+
+    def get_model_info(self, model_name: str) -> Optional[Dict]:
+        """Получение информации о загруженной модели (ОБНОВЛЕННАЯ ВЕРСИЯ)"""
+        if self.model_metadata is None:
+            return None
+        
+        info = {
+            'model_name': model_name,
+            'model_type': self.model_metadata.get('model_type', 'Unknown'),
+            'input_dim': self.model_metadata.get('input_dim', 0),
+            'hidden_dims': self.model_metadata.get('hidden_dims', []),
+            'metrics': self.model_metadata.get('metrics', {}),
+            'test_programs': self.model_metadata.get('test_programs', []),
+            'feature_count': len(self.feature_names) if self.feature_names else 0,
+            'device': str(self.device),
+            'is_finetuned': self.model_metadata.get('is_finetuned', False)
+        }
+        
+        # Дополнительная информация для дообученных моделей
+        if info['is_finetuned']:
+            info.update({
+                'base_model_name': self.model_metadata.get('base_model_name', 'Unknown'),
+                'fine_tune_strategy': self.model_metadata.get('fine_tune_strategy', 'Unknown'),
+                'fine_tune_timestamp': self.model_metadata.get('fine_tune_timestamp', 'Unknown'),
+                'adaptation_strategy': self.model_metadata.get('adaptation_strategy', 'Unknown')
+            })
+        
+        return info
+
+    def list_finetuned_models(self) -> List[Dict]:
+        """Получение списка всех дообученных моделей с подробной информацией"""
+        finetune_dir = os.path.join(self.models_dir, 'finetuned')
+        
+        if not os.path.exists(finetune_dir):
+            return []
+        
+        models = []
+        for file in os.listdir(finetune_dir):
+            if file.endswith('.pt'):
+                model_name = file[:-3]
+                metadata_path = os.path.join(finetune_dir, f"{model_name}_metadata.json")
+                
+                if os.path.exists(metadata_path):
+                    try:
+                        with open(metadata_path, 'r', encoding='utf-8') as f:
+                            metadata = json.load(f)
+                        
+                        models.append({
+                            'name': f"finetuned/{model_name}",
+                            'short_name': model_name,
+                            'base_model': metadata.get('base_model_name', 'Unknown'),
+                            'strategy': metadata.get('fine_tune_strategy', 'Unknown'),
+                            'timestamp': metadata.get('fine_tune_timestamp', 'Unknown'),
+                            'model_type': metadata.get('model_type', 'Unknown'),
+                            'r2_score': metadata.get('metrics', {}).get('r2', 'Unknown'),
+                            'path': os.path.join(finetune_dir, file),
+                            'is_finetuned': True
+                        })
+                    except:
+                        continue
+        
+        # Сортируем по времени создания
+        models.sort(key=lambda x: x['timestamp'], reverse=True)
+        return models
+
+    def compare_model_performance(self, model_names: List[str], 
+                                test_data_path: str = None) -> Optional[Dict]:
+        """
+        Сравнение производительности нескольких моделей
+        
+        Args:
+            model_names: Список имен моделей для сравнения
+            test_data_path: Путь к тестовым данным (опционально)
+            
+        Returns:
+            Dict: Результаты сравнения моделей
+        """
+        if not test_data_path or not os.path.exists(test_data_path):
+            self.logger.warning("Тестовые данные не предоставлены для сравнения")
+            return None
+        
+        try:
+            import pandas as pd
+            from sklearn.metrics import mean_squared_error, mean_absolute_error, r2_score
+            
+            # Загружаем тестовые данные
+            test_df = pd.read_csv(test_data_path, low_memory=False)
+            self.logger.info(f"Загружены тестовые данные: {test_df.shape}")
+            
+            if 'target_speedup' not in test_df.columns:
+                self.logger.error("Колонка 'target_speedup' не найдена в тестовых данных")
+                return None
+            
+            results = {}
+            current_model_backup = None
+            current_preprocessor_backup = None
+            
+            # Сохраняем текущую модель
+            if self.model is not None:
+                current_model_backup = self.model
+                current_preprocessor_backup = self.preprocessor
+            
+            for model_name in model_names:
+                self.logger.info(f"Тестирование модели: {model_name}")
+                
+                try:
+                    # Определяем тип модели
+                    model_type = 'attention' if 'attention' in model_name.lower() else 'mlp'
+                    
+                    # Загружаем модель
+                    if not self.load_model(model_name, model_type):
+                        self.logger.error(f"Не удалось загрузить модель {model_name}")
+                        continue
+                    
+                    # Получаем предсказания для всех строк
+                    predictions = []
+                    actual_values = []
+                    
+                    for idx, row in test_df.iterrows():
+                        try:
+                            # Извлекаем параметры запуска
+                            if 'launch_config' in row and pd.notna(row['launch_config']):
+                                # Парсим launch_config
+                                config_str = str(row['launch_config'])
+                                grid_match = re.search(r'grid=\[([^\]]+)\]', config_str)
+                                threads_match = re.search(r'threads=(\d+)', config_str)
+                                
+                                if grid_match and threads_match:
+                                    grid = [int(x.strip()) for x in grid_match.group(1).split(',')]
+                                    threads = int(threads_match.group(1))
+                                else:
+                                    # Значения по умолчанию
+                                    grid = [1, 1]
+                                    threads = 1
+                            else:
+                                # Используем значения из других колонок если есть
+                                grid = [int(row.get('launch_grid_1', 1)), int(row.get('launch_grid_2', 1))]
+                                threads = int(row.get('launch_threads', 1))
+                            
+                            parallel_time = row.get('parallel_execution_time', 1.0)
+                            actual_speedup = row['target_speedup']
+                            
+                            # Создаем временный DataFrame для предсказания
+                            temp_df = pd.DataFrame([row])
+                            
+                            # Получаем предсказание
+                            features_array = self.preprocess_features(temp_df)
+                            if features_array is not None:
+                                result = self.predict_speedup(features_array)
+                                
+                                if isinstance(result, tuple):  # Attention модель
+                                    predicted_speedup = result[0]
+                                else:
+                                    predicted_speedup = result
+                                
+                                predictions.append(predicted_speedup)
+                                actual_values.append(actual_speedup)
+                        
+                        except Exception as e:
+                            self.logger.debug(f"Ошибка при обработке строки {idx}: {str(e)}")
+                            continue
+                    
+                    # Вычисляем метрики
+                    if predictions and actual_values:
+                        mse = mean_squared_error(actual_values, predictions)
+                        mae = mean_absolute_error(actual_values, predictions)
+                        r2 = r2_score(actual_values, predictions)
+                        rmse = np.sqrt(mse)
+                        
+                        results[model_name] = {
+                            'mse': mse,
+                            'mae': mae,
+                            'rmse': rmse,
+                            'r2': r2,
+                            'predictions_count': len(predictions),
+                            'model_info': self.get_model_info(model_name)
+                        }
+                        
+                        self.logger.info(f"Модель {model_name} - R²: {r2:.4f}, MAE: {mae:.4f}")
+                    else:
+                        self.logger.warning(f"Не удалось получить предсказания для модели {model_name}")
+                
+                except Exception as e:
+                    self.logger.error(f"Ошибка при тестировании модели {model_name}: {str(e)}")
+                    continue
+            
+            # Восстанавливаем исходную модель
+            if current_model_backup is not None:
+                self.model = current_model_backup
+                self.preprocessor = current_preprocessor_backup
+            
+            if results:
+                # Определяем лучшую модель
+                best_model = max(results.keys(), key=lambda k: results[k]['r2'])
+                
+                comparison_results = {
+                    'models_tested': len(results),
+                    'results': results,
+                    'best_model': best_model,
+                    'best_r2': results[best_model]['r2'],
+                    'ranking': sorted(results.keys(), key=lambda k: results[k]['r2'], reverse=True)
+                }
+                
+                self.logger.info(f"Сравнение завершено. Лучшая модель: {best_model} (R² = {results[best_model]['r2']:.4f})")
+                return comparison_results
+            else:
+                self.logger.error("Не удалось протестировать ни одну модель")
+                return None
+        
+        except Exception as e:
+            self.logger.error(f"Ошибка при сравнении моделей: {str(e)}")
+            return None
