@@ -69,6 +69,27 @@ dvmh-performance-predictor/
 └── README.md
 ```
 
+Пример папки с данными по параллельным запускам
+```bash
+parallel_results/
+├── 1d/
+│   ├── program_name
+│       ├── p1_t1_1
+│           ├── stat.txt
+├── 2d/
+│   ├── program_name
+│       ├── p1_t1_1x1
+│           ├── stat.txt
+├── 3d/
+│   ├── program_name
+│       ├── p1_t1_1x1x1
+│           ├── stat.txt
+├── 4d/
+│   ├── program_name
+│       ├── p1_t1_1x1x1x1
+│           ├── stat.txt
+```
+
 ## 🔧 Детальное использование
 ### 1. Сбор данных
 Собирает статистику покрытия из Fortran файлов:
@@ -78,6 +99,18 @@ python main.py collect --source ./sources --results ./data/raw
 #### Параметры:
 - --source - директория с исходными программами
 - --results - директория для сохранения результатов
+
+```bash
+sources/
+├── 1d/
+│   └── program.f
+├── 2d/
+│   ├── program.f
+├── 3d/
+│   ├── program.f
+├── 4d/
+│   ├── program.f
+```
 
 ### 2. Агрегация и создание признакового пространства
 ```bash
